@@ -214,11 +214,10 @@ struct ListingFormView: View {
             .background(Theme.chalk)
             .navigationTitle(existing == nil ? "New listing" : "Edit listing")
             .navigationBarTitleDisplayMode(.inline)
-            .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.link) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(existing == nil ? "Post" : "Save") { Task { await save() } }.bold().tint(Theme.gold).disabled(!canSave)
+                    Button(existing == nil ? "Post" : "Save") { Task { await save() } }.bold().tint(Theme.link).disabled(!canSave)
                 }
             }
             .confirmationDialog("Delete this listing?", isPresented: $confirmingDelete, titleVisibility: .visible) {

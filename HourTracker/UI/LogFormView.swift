@@ -48,11 +48,10 @@ struct LogFormView: View {
             .background(Theme.chalk)
             .navigationTitle(existing == nil ? "Log hours" : "Edit log")
             .navigationBarTitleDisplayMode(.inline)
-            .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.link) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { Task { await save() } }.bold().tint(Theme.gold).disabled(!canSave)
+                    Button("Save") { Task { await save() } }.bold().tint(Theme.link).disabled(!canSave)
                 }
             }
             .fullScreenCover(isPresented: $signing) {
