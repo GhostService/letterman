@@ -25,3 +25,6 @@ server/pocketbase.env
 
 # Design prototype tooling
 node_modules/
+
+# Playwright MCP scratch output
+.playwright-mcp/
