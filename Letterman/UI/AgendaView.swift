@@ -105,7 +105,7 @@ struct AgendaView: View {
                 CalendarSync.sync(store.agenda)
             } else {
                 syncOn = false
-                error = "Calendar access is off. Turn it on in Settings > Privacy & Security > Calendars > Hour Tracker."
+                error = "Calendar access is off. Turn it on in Settings > Privacy & Security > Calendars > Letterman."
             }
         } else if CalendarSync.isEnabled {
             CalendarSync.disable()

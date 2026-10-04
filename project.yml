@@ -1,5 +1,5 @@
-# XcodeGen spec. After changing this file run `xcodegen` in this folder to regenerate HourTracker.xcodeproj.
-name: HourTracker
+# XcodeGen spec. After changing this file run `xcodegen` in this folder to regenerate Letterman.xcodeproj.
+name: Letterman
 options:
   bundleIdPrefix: com.tiredghost
   deploymentTarget:
@@ -20,18 +20,18 @@ settings:
     SWIFT_VERSION: "5.0"
 
 targets:
-  HourTracker:
+  Letterman:
     type: application
     platform: iOS
     sources:
-      - path: HourTracker
+      - path: Letterman
         excludes:
           - Info.plist
     dependencies:
       - package: libxlsxwriter
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.tiredghost.hourtracker
+        PRODUCT_BUNDLE_IDENTIFIER: com.tiredghost.letterman
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
@@ -40,10 +40,10 @@ targets:
         # keeps your signing team; required for TestFlight (FIRST_SETUP.md, Part E).
         # DEVELOPMENT_TEAM: ABCDE12345
     info:
-      path: HourTracker/Info.plist
+      path: Letterman/Info.plist
       properties:
         # The app's name on the home screen. Change it here when you pick a real name.
-        CFBundleDisplayName: Hour Tracker
+        CFBundleDisplayName: Letterman
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen:
@@ -62,7 +62,7 @@ targets:
         # Only Apple's built-in encryption (HTTPS, Keychain) is used, which is exempt from export
         # paperwork. Without this, App Store Connect asks about it on every upload.
         ITSAppUsesNonExemptEncryption: false
-        NSCalendarsFullAccessUsageDescription: Hour Tracker adds your volunteer shifts to a "Volunteering" calendar so they show up in the Calendar app.
+        NSCalendarsFullAccessUsageDescription: Letterman adds your volunteer shifts to a "Volunteering" calendar so they show up in the Calendar app.
         NSAppTransportSecurity:
           # Lets Simulator debug builds reach PocketBase on this Mac. Real servers must use HTTPS.
           NSAllowsLocalNetworking: true

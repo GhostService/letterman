@@ -10,7 +10,7 @@ migrate((app) => {
 
   // ---- settings ----
   const settings = app.settings()
-  settings.meta.appName = "Hour Tracker"
+  settings.meta.appName = "Letterman"
   settings.rateLimits.enabled = true
   // PocketBase sits behind Caddy, which sets X-Forwarded-For to the real client IP.
   settings.trustedProxy.headers = ["X-Forwarded-For"]

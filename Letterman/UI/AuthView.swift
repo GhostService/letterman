@@ -18,7 +18,7 @@ struct AuthView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Hour Tracker").font(.display(64)).foregroundStyle(Theme.gold).padding(.top, 40)
+                Text("Letterman").font(.display(64)).foregroundStyle(Theme.gold).padding(.top, 40)
                 Text(creating ? "Make an account to log hours and find places to volunteer."
                               : "Log volunteer hours, get them signed, and find your next shift.")
                     .font(.fig(16)).foregroundStyle(Theme.heroText)

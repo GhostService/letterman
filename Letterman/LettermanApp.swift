@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct HourTrackerApp: App {
+struct LettermanApp: App {
     @State private var session = Session()
 
     var body: some Scene {

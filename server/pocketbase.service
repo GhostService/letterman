@@ -1,6 +1,6 @@
 # systemd service for PocketBase. Install with the steps in FIRST_SETUP.md (Part B).
 [Unit]
-Description=Hour Tracker backend (PocketBase)
+Description=Letterman backend (PocketBase)
 After=network-online.target
 Wants=network-online.target
 
@@ -8,15 +8,15 @@ Wants=network-online.target
 Type=simple
 User=pocketbase
 Group=pocketbase
-WorkingDirectory=/opt/hourtracker
+WorkingDirectory=/opt/letterman
 # Holds PB_FIELD_KEY. Readable by root only; systemd passes it to the process.
-EnvironmentFile=/etc/hourtracker/pocketbase.env
-ExecStart=/opt/hourtracker/pocketbase serve \
+EnvironmentFile=/etc/letterman/pocketbase.env
+ExecStart=/opt/letterman/pocketbase serve \
     --http 127.0.0.1:8090 \
-    --dir /opt/hourtracker/pb_data \
-    --hooksDir /opt/hourtracker/pb_hooks \
-    --migrationsDir /opt/hourtracker/pb_migrations \
-    --publicDir /opt/hourtracker/pb_public \
+    --dir /opt/letterman/pb_data \
+    --hooksDir /opt/letterman/pb_hooks \
+    --migrationsDir /opt/letterman/pb_migrations \
+    --publicDir /opt/letterman/pb_public \
     --hooksWatch=false \
     --automigrate=false \
     --encryptionEnv PB_FIELD_KEY
@@ -29,7 +29,7 @@ NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
 PrivateTmp=true
-ReadWritePaths=/opt/hourtracker/pb_data
+ReadWritePaths=/opt/letterman/pb_data
 
 [Install]
 WantedBy=multi-user.target
