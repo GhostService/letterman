@@ -216,9 +216,9 @@ struct ListingFormView: View {
             .navigationBarTitleDisplayMode(.inline)
             .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(existing == nil ? "Post" : "Save") { Task { await save() } }.bold().disabled(!canSave)
+                    Button(existing == nil ? "Post" : "Save") { Task { await save() } }.bold().tint(Theme.gold).disabled(!canSave)
                 }
             }
             .confirmationDialog("Delete this listing?", isPresented: $confirmingDelete, titleVisibility: .visible) {

@@ -72,7 +72,7 @@ def main():
     data_dir = tempfile.mkdtemp(prefix="pb_smoke_")
     env = dict(os.environ, PB_FIELD_KEY=secrets.token_urlsafe(24)[:32])
     common = ["--dir", data_dir, "--migrationsDir", os.path.join(HERE, "pb_migrations"),
-              "--hooksDir", os.path.join(HERE, "pb_hooks")]
+              "--hooksDir", os.path.join(HERE, "pb_hooks"), "--encryptionEnv", "PB_FIELD_KEY"]
     admin_email, admin_pw = "admin@smoke.test", secrets.token_urlsafe(16)
     subprocess.run([binary, "superuser", "upsert", admin_email, admin_pw, *common],
                    env=env, check=True, capture_output=True)

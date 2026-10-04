@@ -35,9 +35,13 @@ final class Session {
     }
 
     func signIn(email: String, password: String) async throws {
-        let auth: AuthResponse = try await pb.send("POST", "/api/collections/users/auth-with-password",
-                                                   body: ["identity": email.trimmed, "password": password])
-        store(auth)
+        do {
+            let auth: AuthResponse = try await pb.send("POST", "/api/collections/users/auth-with-password",
+                                                       body: ["identity": email.trimmed, "password": password])
+            store(auth)
+        } catch let error as APIError where error.status == 400 {
+            throw APIError(status: 400, message: "That email and password don't match. Check them, or tap Forgot password.")
+        }
     }
 
     func signUp(_ fields: [String: Any], email: String, password: String) async throws {
