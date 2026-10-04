@@ -248,9 +248,8 @@ struct EventFormView: View {
             .background(Theme.chalk)
             .navigationTitle(editor.event == nil ? "New event" : "Edit event")
             .navigationBarTitleDisplayMode(.inline)
-            .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.link) }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         run {
@@ -261,7 +260,7 @@ struct EventFormView: View {
                         }
                     }
                     .bold()
-                    .tint(Theme.gold)
+                    .tint(Theme.link)
                     .disabled(title.trimmed.isEmpty || busy)
                 }
             }
