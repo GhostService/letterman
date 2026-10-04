@@ -44,6 +44,7 @@ struct RootView: View {
 
 struct VolunteerTabs: View {
     @State private var store: VolunteerStore
+    @Environment(\.scenePhase) private var scenePhase
 
     init(userID: String) { _store = State(initialValue: VolunteerStore(userID: userID)) }
 
@@ -56,6 +57,9 @@ struct VolunteerTabs: View {
         }
         .environment(store)
         .task { try? await store.loadAll() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await store.uploadPending() } }
+        }
     }
 }
 

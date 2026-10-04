@@ -7,9 +7,17 @@ struct PendingLog: Codable, Identifiable, Equatable {
     var id = UUID()
     /// Set when this is an edit or signature for a log that's already on the server.
     var remoteID: String?
+    /// The id a new log is created with. Fixed up front so a retry after a lost response
+    /// finds the log it already created instead of making a duplicate.
+    var recordID = PendingLog.newRecordID()
     var draft: LogDraft
     /// Why the server refused it last time, if it did. Shown so the volunteer can fix or discard it.
     var problem: String?
+
+    /// PocketBase ids are 15 characters of a-z and 0-9.
+    static func newRecordID() -> String {
+        String((0..<15).map { _ in "abcdefghijklmnopqrstuvwxyz0123456789".randomElement()! })
+    }
 }
 
 enum Outbox {

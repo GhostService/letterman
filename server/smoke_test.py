@@ -232,6 +232,12 @@ def run(admin_email, admin_pw, data_dir):
     s, _ = call("PATCH", f"/api/collections/hour_logs/records/{signed_log}", tv1, {"hours": 10})
     check("signed log is locked", s == 404, s)
 
+    # The app picks the id of a new log so a retried upload can't create a duplicate.
+    s, r = call("POST", "/api/collections/hour_logs/records", tv1, {**log, "id": "retrytest000001"})
+    check("client can choose a new log's id", s == 200 and r.get("id") == "retrytest000001", r)
+    s, _ = call("POST", "/api/collections/hour_logs/records", tv1, {**log, "id": "retrytest000001"})
+    check("retrying the same id is rejected (no duplicate)", s == 400, s)
+
     s, r = call("POST", "/api/collections/hour_logs/records", tv1, log)
     draft = r["id"]
     s, _ = call("PATCH", f"/api/collections/hour_logs/records/{draft}", tv1, {"hours": 4})

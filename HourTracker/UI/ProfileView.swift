@@ -51,7 +51,9 @@ struct ProfileView: View {
                 }
                 .card()
 
-                Text("Your phone, school and grade are only shared with organizations whose opportunities you sign up for. Personal details are encrypted on the server.")
+                Text(user?.isOperator == true
+                     ? "You only see contact details for students who sign up for your own listings. Please use them only to coordinate those shifts."
+                     : "Your phone, school and grade are only shared with organizations whose opportunities you sign up for. Personal details are encrypted on the server.")
                     .font(.fig(13)).foregroundStyle(Theme.mute).padding(.horizontal, 4)
 
                 Button("Sign out") { confirmingSignOut = true }
