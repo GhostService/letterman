@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>App icon</title>
+<style>
+  html, body { margin: 0; width: 1024px; height: 1024px; overflow: hidden; }
+  body { background: #123B2A; position: relative; }
+  .stripe { position: absolute; left: 0; right: 0; bottom: 120px; height: 56px;
+    background: repeating-linear-gradient(90deg, #F2B33D 0 110px, #123B2A 110px 160px); }
+  .patch { position: absolute; left: 50%; top: 92px; transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%; background: #F2B33D;
+    box-shadow: 0 0 0 22px #123B2A, 0 0 0 34px #F2B33D; }
+  .patch::before { content: ""; position: absolute; inset: 28px; border-radius: 50%; border: 12px dashed #123B2A; }
+  svg { position: absolute; left: 50%; top: 50%; width: 330px; height: 330px; transform: translate(-50%, -46%); }
+</style></head>
+<body>
+  <div class="patch"><svg viewBox="0 0 100 100"><path d="M18 53 40 74 84 26" fill="none" stroke="#123B2A" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="stripe"></div>
+</body></html>

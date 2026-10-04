@@ -1,0 +1,175 @@
+import Foundation
+import Observation
+
+/// Everything a volunteer sees: hour logs, opportunities, sign-ups and calendar entries.
+@MainActor @Observable
+final class VolunteerStore {
+    let userID: String
+    var logs: [HourLog] = []
+    var pending: [PendingLog] = Outbox.load()
+    var opportunities: [Opportunity] = []
+    var signups: [Signup] = []
+    var events: [CalendarEvent] = []
+
+    private let pb = PocketBase.shared
+
+    init(userID: String) { self.userID = userID }
+
+    var signedHours: Double { logs.filter(\.isSigned).reduce(0) { $0 + $1.hours } }
+
+    func signup(for opportunity: Opportunity) -> Signup? {
+        signups.first { $0.opportunity == opportunity.id }
+    }
+
+    // MARK: Loading
+
+    func loadAll() async throws {
+        await uploadPending()
+        async let logs: [HourLog] = pb.list("hour_logs", sort: "-started_at")
+        async let opportunities: [Opportunity] = pb.list("opportunities", filter: "starts_at >= @now", sort: "starts_at")
+        async let signups: [Signup] = pb.list("signups", filter: "volunteer = '\(userID)'", expand: "opportunity")
+        async let events: [CalendarEvent] = pb.list("calendar_events", sort: "starts_at")
+        (self.logs, self.opportunities, self.signups, self.events) = try await (logs, opportunities, signups, events)
+        CalendarSync.sync(agenda)
+    }
+
+    // MARK: Hour logs
+
+    enum SaveResult { case uploaded, savedOffline }
+
+    /// Creates a log, or updates an unsigned one. With no signal it goes to the outbox instead.
+    func saveLog(_ draft: LogDraft, existingID: String? = nil) async throws -> SaveResult {
+        do {
+            try await upload(PendingLog(remoteID: existingID, draft: draft))
+            return .uploaded
+        } catch where error.isNetworkProblem {
+            pending.append(PendingLog(remoteID: existingID, draft: draft))
+            Outbox.save(pending)
+            return .savedOffline
+        }
+    }
+
+    func deleteLog(_ log: HourLog) async throws {
+        try await pb.delete("hour_logs", id: log.id)
+        logs.removeAll { $0.id == log.id }
+    }
+
+    func discardPending(_ item: PendingLog) {
+        pending.removeAll { $0.id == item.id }
+        Outbox.save(pending)
+    }
+
+    /// Uploads waiting logs in order. Stops quietly while offline. An item the server refuses stays
+    /// (with the reason) until the volunteer discards it, so a signature is never silently dropped.
+    func uploadPending() async {
+        for item in pending {
+            do {
+                try await upload(item)
+                pending.removeAll { $0.id == item.id }
+            } catch where error.isNetworkProblem {
+                return
+            } catch {
+                if let i = pending.firstIndex(where: { $0.id == item.id }) {
+                    pending[i].problem = error.localizedDescription
+                }
+            }
+            Outbox.save(pending)
+        }
+    }
+
+    private func upload(_ item: PendingLog) async throws {
+        let body = item.draft.body(owner: userID)
+        let saved: HourLog
+        if let id = item.remoteID {
+            saved = try await pb.update("hour_logs", id: id, body)
+        } else {
+            saved = try await pb.create("hour_logs", body)
+        }
+        logs.removeAll { $0.id == saved.id }
+        logs.append(saved)
+        logs.sort { $0.startedAt > $1.startedAt }
+    }
+
+    // MARK: Opportunities
+
+    func signUp(for opportunity: Opportunity) async throws {
+        let signup: Signup = try await pb.send("POST", "/api/collections/signups/records",
+                                               query: [URLQueryItem(name: "expand", value: "opportunity")],
+                                               body: ["opportunity": opportunity.id, "volunteer": userID])
+        signups.append(signup)
+        try await reloadOpportunity(opportunity.id)
+    }
+
+    func cancel(_ signup: Signup) async throws {
+        try await pb.delete("signups", id: signup.id)
+        signups.removeAll { $0.id == signup.id }
+        try await reloadOpportunity(signup.opportunity)
+    }
+
+    private func reloadOpportunity(_ id: String) async throws {
+        let fresh: Opportunity = try await pb.send("GET", "/api/collections/opportunities/records/\(id)")
+        if let i = opportunities.firstIndex(where: { $0.id == id }) { opportunities[i] = fresh }
+        if let i = signups.firstIndex(where: { $0.opportunity == id }) { signups[i].expand = .init(opportunity: fresh) }
+        CalendarSync.sync(agenda)
+    }
+
+    // MARK: Calendar
+
+    func saveEvent(_ body: [String: Any], existingID: String?) async throws {
+        var body = body
+        body["owner"] = userID
+        let saved: CalendarEvent = existingID == nil
+            ? try await pb.create("calendar_events", body)
+            : try await pb.update("calendar_events", id: existingID!, body)
+        events.removeAll { $0.id == saved.id }
+        events.append(saved)
+        events.sort { $0.startsAt < $1.startsAt }
+        CalendarSync.sync(agenda)
+    }
+
+    func deleteEvent(_ event: CalendarEvent) async throws {
+        try await pb.delete("calendar_events", id: event.id)
+        events.removeAll { $0.id == event.id }
+        CalendarSync.sync(agenda)
+    }
+
+    /// Custom entries plus every opportunity the volunteer signed up for, oldest first.
+    var agenda: [AgendaItem] {
+        let fromSignups = signups.compactMap { s in s.expand?.opportunity.map(AgendaItem.init) }
+        return (fromSignups + events.map(AgendaItem.init)).sorted { $0.start < $1.start }
+    }
+}
+
+struct AgendaItem: Identifiable, Equatable {
+    enum Kind: Equatable { case signup(Opportunity), custom(CalendarEvent) }
+
+    let id: String
+    let title: String
+    let location: String
+    let notes: String
+    let start: Date
+    let hours: Double
+    let kind: Kind
+
+    var end: Date { start.addingTimeInterval(max(hours, 0.5) * 3600) }
+
+    init(_ o: Opportunity) {
+        id = "opp-" + o.id
+        title = o.title
+        location = o.address
+        notes = "\(o.orgName)\n\(o.details)".trimmed
+        start = o.startsAt
+        hours = o.durationHours
+        kind = .signup(o)
+    }
+
+    init(_ e: CalendarEvent) {
+        id = "evt-" + e.id
+        title = e.title
+        location = e.location
+        notes = e.notes
+        start = e.startsAt
+        hours = e.durationHours
+        kind = .custom(e)
+    }
+}

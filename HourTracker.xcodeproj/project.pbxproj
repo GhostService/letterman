@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A329F82F621300D5AE35D43 /* Figtree-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DA7190F813E693F45C6755B /* Figtree-Bold.ttf */; };
+		19DEB8DCB750704AB9771653 /* libxlsxwriter in Frameworks */ = {isa = PBXBuildFile; productRef = C7507D31F08413F6CA474DEF /* libxlsxwriter */; };
+		1E61EF7B03ECDC294690B3F9 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421EB79A49B93FA462FFFF8 /* Export.swift */; };
+		2803D10211DBFEF9DB202B71 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D2D3CF14D40EC6BF35A580 /* Session.swift */; };
+		3397D82F677A959A37185356 /* VolunteerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E810C757EA7EB3ED21EDDD37 /* VolunteerStore.swift */; };
+		3525EE4314CE19D7DA2B867F /* HoursView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C5CCFBC9ED77932151F792 /* HoursView.swift */; };
+		475592439775339FF8CB5904 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33A2F06B2A53DFB5C8DA47 /* ProfileView.swift */; };
+		4E8C5FFB35BC0E608C68E56C /* OFL-BigShouldersDisplay.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1F686E4033877EF73B6C1B0E /* OFL-BigShouldersDisplay.txt */; };
+		567C830BD40374EABA71B42D /* SignatureSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B5B53336046643DCAD8724 /* SignatureSheet.swift */; };
+		61035BD9D833D6399AF1BB06 /* OperatorViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7989283AEAEC8E611CFC50E /* OperatorViews.swift */; };
+		6143064E4BA6F63BF3317767 /* OpportunitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D65A612933189DFA41C0BDF /* OpportunitiesView.swift */; };
+		6DEE9C8F1C3962E00D6A9EFB /* OperatorStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7367CF12AEB1BEA333A057EE /* OperatorStore.swift */; };
+		83534DA110069CC2DCD783C1 /* BigShouldersDisplay-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A97AFDB3DE9BE377ED02D40 /* BigShouldersDisplay-ExtraBold.ttf */; };
+		8669EA092CCA4ACC6262A2CB /* AgendaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E16010A456EA3E8B84D65F /* AgendaView.swift */; };
+		9E912ABF43082F69D10CB022 /* PocketBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4729FFD03B4ACC84321B84 /* PocketBase.swift */; };
+		9EBC078E058D05D0C65A9971 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FB553F65DFE96ED840E4BED /* Outbox.swift */; };
+		A07AC39F49824D2968B29C25 /* HourTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC40AF19D04B6F3321F8CB1 /* HourTrackerApp.swift */; };
+		A6887537038147E7462EC71E /* LogFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7F376EC3CB41A2EFC0D362 /* LogFormView.swift */; };
+		A6D850E6C01E80E9C74937ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8C49B237CE5054AF88CCF54 /* Assets.xcassets */; };
+		B44A400FC7C763939D16D139 /* LogDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26818911F029BCB25BF8170D /* LogDetailView.swift */; };
+		B8BD6CF49CCF15DC96F67630 /* Figtree-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F203E9BFC2382C185B8D471B /* Figtree-Regular.ttf */; };
+		BE05F250F2A8F4B0C1449499 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFB48E4292E92E371A08988 /* AuthView.swift */; };
+		BFA9124C2CC641BB8C0EA06A /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C67299AD5AE65919FF91C11 /* Config.swift */; };
+		C460B56AA330D80BD9CDBB66 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC2251DF657ECE371912F0B /* Keychain.swift */; };
+		C50A088D630CB49FA95D1B37 /* CalendarSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97E0DFF4F252580CEE12503 /* CalendarSync.swift */; };
+		CD860E415B90CE55B7C93E17 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF568FF74E513122459DF29 /* Models.swift */; };
+		D23914F4B29C30B2B8B6BAB8 /* Figtree-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D5492DB6BEA89D5C2E0D1E6F /* Figtree-SemiBold.ttf */; };
+		D90B2A9A608CD2D031CD083F /* Figtree-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 98111E6D15B51E9DD765E5ED /* Figtree-Medium.ttf */; };
+		E9F1D9D00CDEA07BB7517E95 /* BigShouldersDisplay-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BC5CC284693B2B3AAE955C10 /* BigShouldersDisplay-Black.ttf */; };
+		ED15942D4D21D6CAD2C8C9C6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6891E101526C1658DE2E55 /* Theme.swift */; };
+		F318D5293967A9DBFA503491 /* OFL-Figtree.txt in Resources */ = {isa = PBXBuildFile; fileRef = 67A5A44E3D4E82BCAF94320B /* OFL-Figtree.txt */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0FB553F65DFE96ED840E4BED /* Outbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outbox.swift; sourceTree = "<group>"; };
+		1DC40AF19D04B6F3321F8CB1 /* HourTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourTrackerApp.swift; sourceTree = "<group>"; };
+		1F686E4033877EF73B6C1B0E /* OFL-BigShouldersDisplay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-BigShouldersDisplay.txt"; sourceTree = "<group>"; };
+		26818911F029BCB25BF8170D /* LogDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDetailView.swift; sourceTree = "<group>"; };
+		49C5CCFBC9ED77932151F792 /* HoursView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoursView.swift; sourceTree = "<group>"; };
+		49E16010A456EA3E8B84D65F /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
+		5DA7190F813E693F45C6755B /* Figtree-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Figtree-Bold.ttf"; sourceTree = "<group>"; };
+		5FC2251DF657ECE371912F0B /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		67A5A44E3D4E82BCAF94320B /* OFL-Figtree.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-Figtree.txt"; sourceTree = "<group>"; };
+		6A97AFDB3DE9BE377ED02D40 /* BigShouldersDisplay-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BigShouldersDisplay-ExtraBold.ttf"; sourceTree = "<group>"; };
+		6B4729FFD03B4ACC84321B84 /* PocketBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketBase.swift; sourceTree = "<group>"; };
+		6C67299AD5AE65919FF91C11 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		71B5B53336046643DCAD8724 /* SignatureSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureSheet.swift; sourceTree = "<group>"; };
+		7367CF12AEB1BEA333A057EE /* OperatorStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatorStore.swift; sourceTree = "<group>"; };
+		7A7F376EC3CB41A2EFC0D362 /* LogFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormView.swift; sourceTree = "<group>"; };
+		7D65A612933189DFA41C0BDF /* OpportunitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpportunitiesView.swift; sourceTree = "<group>"; };
+		98111E6D15B51E9DD765E5ED /* Figtree-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Figtree-Medium.ttf"; sourceTree = "<group>"; };
+		986A99BEAE800D888B53F80D /* HourTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HourTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6D2D3CF14D40EC6BF35A580 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
+		ABFB48E4292E92E371A08988 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		BC5CC284693B2B3AAE955C10 /* BigShouldersDisplay-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BigShouldersDisplay-Black.ttf"; sourceTree = "<group>"; };
+		C8C49B237CE5054AF88CCF54 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CE33A2F06B2A53DFB5C8DA47 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		CEF568FF74E513122459DF29 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		D5492DB6BEA89D5C2E0D1E6F /* Figtree-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Figtree-SemiBold.ttf"; sourceTree = "<group>"; };
+		E421EB79A49B93FA462FFFF8 /* Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
+		E810C757EA7EB3ED21EDDD37 /* VolunteerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolunteerStore.swift; sourceTree = "<group>"; };
+		E97E0DFF4F252580CEE12503 /* CalendarSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSync.swift; sourceTree = "<group>"; };
+		EA6891E101526C1658DE2E55 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		F203E9BFC2382C185B8D471B /* Figtree-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Figtree-Regular.ttf"; sourceTree = "<group>"; };
+		F7989283AEAEC8E611CFC50E /* OperatorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperatorViews.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B4CACD2B68D7CD7DA315692F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				19DEB8DCB750704AB9771653 /* libxlsxwriter in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00B0BBCD7BD75F9512CA33D6 /* HourTracker */ = {
+			isa = PBXGroup;
+			children = (
+				C8C49B237CE5054AF88CCF54 /* Assets.xcassets */,
+				1DC40AF19D04B6F3321F8CB1 /* HourTrackerApp.swift */,
+				D564F3703F33C3E35A0B2BBA /* Core */,
+				4AEC84F681A4EA9B32A2780E /* Fonts */,
+				74AE9455B38DB7A8265044A9 /* UI */,
+			);
+			path = HourTracker;
+			sourceTree = "<group>";
+		};
+		49C4C33C3592B49CB61589A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				986A99BEAE800D888B53F80D /* HourTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4AEC84F681A4EA9B32A2780E /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				BC5CC284693B2B3AAE955C10 /* BigShouldersDisplay-Black.ttf */,
+				6A97AFDB3DE9BE377ED02D40 /* BigShouldersDisplay-ExtraBold.ttf */,
+				5DA7190F813E693F45C6755B /* Figtree-Bold.ttf */,
+				98111E6D15B51E9DD765E5ED /* Figtree-Medium.ttf */,
+				F203E9BFC2382C185B8D471B /* Figtree-Regular.ttf */,
+				D5492DB6BEA89D5C2E0D1E6F /* Figtree-SemiBold.ttf */,
+				1F686E4033877EF73B6C1B0E /* OFL-BigShouldersDisplay.txt */,
+				67A5A44E3D4E82BCAF94320B /* OFL-Figtree.txt */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		74AE9455B38DB7A8265044A9 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				49E16010A456EA3E8B84D65F /* AgendaView.swift */,
+				ABFB48E4292E92E371A08988 /* AuthView.swift */,
+				49C5CCFBC9ED77932151F792 /* HoursView.swift */,
+				26818911F029BCB25BF8170D /* LogDetailView.swift */,
+				7A7F376EC3CB41A2EFC0D362 /* LogFormView.swift */,
+				F7989283AEAEC8E611CFC50E /* OperatorViews.swift */,
+				7D65A612933189DFA41C0BDF /* OpportunitiesView.swift */,
+				CE33A2F06B2A53DFB5C8DA47 /* ProfileView.swift */,
+				71B5B53336046643DCAD8724 /* SignatureSheet.swift */,
+				EA6891E101526C1658DE2E55 /* Theme.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		D564F3703F33C3E35A0B2BBA /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				E97E0DFF4F252580CEE12503 /* CalendarSync.swift */,
+				6C67299AD5AE65919FF91C11 /* Config.swift */,
+				E421EB79A49B93FA462FFFF8 /* Export.swift */,
+				5FC2251DF657ECE371912F0B /* Keychain.swift */,
+				CEF568FF74E513122459DF29 /* Models.swift */,
+				7367CF12AEB1BEA333A057EE /* OperatorStore.swift */,
+				0FB553F65DFE96ED840E4BED /* Outbox.swift */,
+				6B4729FFD03B4ACC84321B84 /* PocketBase.swift */,
+				A6D2D3CF14D40EC6BF35A580 /* Session.swift */,
+				E810C757EA7EB3ED21EDDD37 /* VolunteerStore.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		E10F940EDF2721B4AB8C8937 = {
+			isa = PBXGroup;
+			children = (
+				00B0BBCD7BD75F9512CA33D6 /* HourTracker */,
+				49C4C33C3592B49CB61589A1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DB6FC65573BAF6A15C543240 /* HourTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB86517DC64717D0B074BF84 /* Build configuration list for PBXNativeTarget "HourTracker" */;
+			buildPhases = (
+				2B0934CB9ED57895F65E9DEB /* Sources */,
+				7954E47401B661DC98AA6888 /* Resources */,
+				B4CACD2B68D7CD7DA315692F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HourTracker;
+			packageProductDependencies = (
+				C7507D31F08413F6CA474DEF /* libxlsxwriter */,
+			);
+			productName = HourTracker;
+			productReference = 986A99BEAE800D888B53F80D /* HourTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B3E7AAAD2F81880879895DF9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					DB6FC65573BAF6A15C543240 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1D01CA51E3F8361DBD0BF528 /* Build configuration list for PBXProject "HourTracker" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E10F940EDF2721B4AB8C8937;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				96E783AFE283B984C99061B0 /* XCRemoteSwiftPackageReference "libxlsxwriter" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 49C4C33C3592B49CB61589A1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DB6FC65573BAF6A15C543240 /* HourTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7954E47401B661DC98AA6888 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6D850E6C01E80E9C74937ED /* Assets.xcassets in Resources */,
+				E9F1D9D00CDEA07BB7517E95 /* BigShouldersDisplay-Black.ttf in Resources */,
+				83534DA110069CC2DCD783C1 /* BigShouldersDisplay-ExtraBold.ttf in Resources */,
+				0A329F82F621300D5AE35D43 /* Figtree-Bold.ttf in Resources */,
+				D90B2A9A608CD2D031CD083F /* Figtree-Medium.ttf in Resources */,
+				B8BD6CF49CCF15DC96F67630 /* Figtree-Regular.ttf in Resources */,
+				D23914F4B29C30B2B8B6BAB8 /* Figtree-SemiBold.ttf in Resources */,
+				4E8C5FFB35BC0E608C68E56C /* OFL-BigShouldersDisplay.txt in Resources */,
+				F318D5293967A9DBFA503491 /* OFL-Figtree.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2B0934CB9ED57895F65E9DEB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8669EA092CCA4ACC6262A2CB /* AgendaView.swift in Sources */,
+				BE05F250F2A8F4B0C1449499 /* AuthView.swift in Sources */,
+				C50A088D630CB49FA95D1B37 /* CalendarSync.swift in Sources */,
+				BFA9124C2CC641BB8C0EA06A /* Config.swift in Sources */,
+				1E61EF7B03ECDC294690B3F9 /* Export.swift in Sources */,
+				A07AC39F49824D2968B29C25 /* HourTrackerApp.swift in Sources */,
+				3525EE4314CE19D7DA2B867F /* HoursView.swift in Sources */,
+				C460B56AA330D80BD9CDBB66 /* Keychain.swift in Sources */,
+				B44A400FC7C763939D16D139 /* LogDetailView.swift in Sources */,
+				A6887537038147E7462EC71E /* LogFormView.swift in Sources */,
+				CD860E415B90CE55B7C93E17 /* Models.swift in Sources */,
+				6DEE9C8F1C3962E00D6A9EFB /* OperatorStore.swift in Sources */,
+				61035BD9D833D6399AF1BB06 /* OperatorViews.swift in Sources */,
+				6143064E4BA6F63BF3317767 /* OpportunitiesView.swift in Sources */,
+				9EBC078E058D05D0C65A9971 /* Outbox.swift in Sources */,
+				9E912ABF43082F69D10CB022 /* PocketBase.swift in Sources */,
+				475592439775339FF8CB5904 /* ProfileView.swift in Sources */,
+				2803D10211DBFEF9DB202B71 /* Session.swift in Sources */,
+				567C830BD40374EABA71B42D /* SignatureSheet.swift in Sources */,
+				ED15942D4D21D6CAD2C8C9C6 /* Theme.swift in Sources */,
+				3397D82F677A959A37185356 /* VolunteerStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		40C256E36C26696C5AF349B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HourTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiredghost.hourtracker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		6ECFBC0499EFCA23C05690FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = HourTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiredghost.hourtracker;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B90E772E383E22BA7E884405 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CB5DCD16D1ABC30CF05BBECB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D01CA51E3F8361DBD0BF528 /* Build configuration list for PBXProject "HourTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B90E772E383E22BA7E884405 /* Debug */,
+				CB5DCD16D1ABC30CF05BBECB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AB86517DC64717D0B074BF84 /* Build configuration list for PBXNativeTarget "HourTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40C256E36C26696C5AF349B7 /* Debug */,
+				6ECFBC0499EFCA23C05690FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		96E783AFE283B984C99061B0 /* XCRemoteSwiftPackageReference "libxlsxwriter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jmcnamara/libxlsxwriter";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C7507D31F08413F6CA474DEF /* libxlsxwriter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 96E783AFE283B984C99061B0 /* XCRemoteSwiftPackageReference "libxlsxwriter" */;
+			productName = libxlsxwriter;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = B3E7AAAD2F81880879895DF9 /* Project object */;
+}
