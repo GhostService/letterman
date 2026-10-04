@@ -1,6 +1,6 @@
 # Privacy and data protection
 
-Most people using this app are high-school students, many under 18. This page explains in plain language what the app stores, who can see it, and how it's protected. Keep it accurate if the app changes, and adapt it into a public privacy policy before releasing the app to others.
+Most people using this app are high-school students, many under 18. The public version for users is `server/pb_public/privacy.html` (served at https://hours.tiredghost.com/privacy.html); keep both in sync. This page explains in plain language what the app stores, who can see it, and how it's protected. Keep it accurate if the app changes, and adapt it into a public privacy policy before releasing the app to others.
 
 ## What's collected
 
