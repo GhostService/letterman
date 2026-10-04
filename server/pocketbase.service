@@ -1,4 +1,4 @@
-# systemd service for PocketBase. Install with the steps in docs/SERVER_SETUP.md.
+# systemd service for PocketBase. Install with the steps in FIRST_SETUP.md (Part B).
 [Unit]
 Description=Hour Tracker backend (PocketBase)
 After=network-online.target

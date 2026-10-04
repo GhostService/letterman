@@ -10,11 +10,11 @@ const ENCRYPTED = {
 }
 const PREFIX = "enc:"
 
-// AES-256-GCM key from the environment. Exactly 32 characters (see docs/SERVER_SETUP.md).
+// AES-256-GCM key from the environment. Exactly 32 characters (see FIRST_SETUP.md).
 function key() {
   const k = $os.getenv("PB_FIELD_KEY")
   if (k.length !== 32) {
-    throw new Error("PB_FIELD_KEY must be set to exactly 32 characters. See docs/SERVER_SETUP.md.")
+    throw new Error("PB_FIELD_KEY must be set to exactly 32 characters. See FIRST_SETUP.md.")
   }
   return k
 }

@@ -67,7 +67,7 @@ def iso(dt):
 def main():
     binary = os.path.join(HERE, "pocketbase")
     if not os.path.exists(binary):
-        sys.exit("Download the pocketbase binary into server/ first (see docs/SERVER_SETUP.md).")
+        sys.exit("Download the pocketbase binary into server/ first (see FIRST_SETUP.md).")
 
     data_dir = tempfile.mkdtemp(prefix="pb_smoke_")
     env = dict(os.environ, PB_FIELD_KEY=secrets.token_urlsafe(24)[:32])
