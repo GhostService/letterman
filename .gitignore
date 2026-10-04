@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.xcuserdatad/
+.swiftpm/
+.build/
+
+# PocketBase (binary + live data never go in git)
+server/pocketbase
+server/pocketbase.exe
+server/pb_data/
+server/*.zip
+server/CHANGELOG.md
+server/LICENSE.md
+
+# Secrets
+.env
+*.env
+server/pocketbase.env
+
+# Design prototype tooling
+node_modules/
