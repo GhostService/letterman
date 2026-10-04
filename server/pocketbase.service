@@ -1,0 +1,33 @@
+# systemd service for PocketBase. Install with the steps in docs/SERVER_SETUP.md.
+[Unit]
+Description=Hour Tracker backend (PocketBase)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pocketbase
+Group=pocketbase
+WorkingDirectory=/opt/hourtracker
+# Holds PB_FIELD_KEY. Readable by root only; systemd passes it to the process.
+EnvironmentFile=/etc/hourtracker/pocketbase.env
+ExecStart=/opt/hourtracker/pocketbase serve \
+    --http 127.0.0.1:8090 \
+    --dir /opt/hourtracker/pb_data \
+    --hooksDir /opt/hourtracker/pb_hooks \
+    --migrationsDir /opt/hourtracker/pb_migrations \
+    --hooksWatch=false \
+    --encryptionEnv PB_FIELD_KEY
+Restart=always
+RestartSec=5
+LimitNOFILE=4096
+
+# Hardening: the service can only write to its data folder.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/hourtracker/pb_data
+
+[Install]
+WantedBy=multi-user.target
