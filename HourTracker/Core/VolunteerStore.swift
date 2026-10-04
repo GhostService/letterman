@@ -1,4 +1,5 @@
 import Foundation
+import Network
 import Observation
 
 /// Everything a volunteer sees: hour logs, opportunities, sign-ups and calendar entries.
@@ -12,8 +13,20 @@ final class VolunteerStore {
     var events: [CalendarEvent] = []
 
     private let pb = PocketBase.shared
+    private let network = NWPathMonitor()
+    private var uploading = false
 
-    init(userID: String) { self.userID = userID }
+    init(userID: String) {
+        self.userID = userID
+        // Upload waiting logs as soon as the phone gets a connection again.
+        network.pathUpdateHandler = { [weak self] path in
+            guard path.status == .satisfied else { return }
+            Task { @MainActor in await self?.uploadPending() }
+        }
+        network.start(queue: .main)
+    }
+
+    deinit { network.cancel() }
 
     var signedHours: Double { logs.filter(\.isSigned).reduce(0) { $0 + $1.hours } }
 
@@ -62,6 +75,10 @@ final class VolunteerStore {
     /// Uploads waiting logs in order. Stops quietly while offline. An item the server refuses stays
     /// (with the reason) until the volunteer discards it, so a signature is never silently dropped.
     func uploadPending() async {
+        // One upload pass at a time, or the same entry could be sent twice.
+        guard !uploading else { return }
+        uploading = true
+        defer { uploading = false }
         for item in pending {
             do {
                 try await upload(item)
@@ -78,12 +95,20 @@ final class VolunteerStore {
     }
 
     private func upload(_ item: PendingLog) async throws {
-        let body = item.draft.body(owner: userID)
+        var body = item.draft.body(owner: userID)
         let saved: HourLog
         if let id = item.remoteID {
             saved = try await pb.update("hour_logs", id: id, body)
         } else {
-            saved = try await pb.create("hour_logs", body)
+            body["id"] = item.recordID
+            do {
+                saved = try await pb.create("hour_logs", body)
+            } catch let error as APIError where error.status == 400 {
+                // An earlier try may have reached the server even though the reply never came back.
+                guard let existing: HourLog = try? await pb.send("GET", "/api/collections/hour_logs/records/\(item.recordID)")
+                else { throw error }
+                saved = existing
+            }
         }
         logs.removeAll { $0.id == saved.id }
         logs.append(saved)
