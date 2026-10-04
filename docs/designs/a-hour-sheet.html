@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design A — Hour Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F3F6FA;
+    --grid: #DCE5F0;
+    --ink: #1D2B53;
+    --pencil: #6B7280;
+    --margin: #E5484D;
+    --hl: #FFE45C;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #C9D3E0; font-family: "Atkinson Hyperlegible", sans-serif; color: var(--ink); padding: 48px; }
+  .board { display: flex; gap: 40px; align-items: flex-start; }
+  .caption { font: 700 15px/1.3 "Atkinson Hyperlegible"; color: var(--ink); margin: 0 0 12px 6px; }
+  .phone {
+    width: 393px; height: 852px; border-radius: 54px; overflow: hidden; position: relative;
+    background-color: var(--paper);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    box-shadow: 0 0 0 10px #0E1530, 0 30px 60px rgba(14,21,48,.35);
+    display: flex; flex-direction: column;
+  }
+  .status { height: 54px; display: flex; justify-content: space-between; align-items: center; padding: 14px 34px 0; font: 700 16px "Atkinson Hyperlegible"; flex-shrink: 0; }
+  .status .island { width: 124px; height: 36px; background: #000; border-radius: 20px; position: absolute; left: 50%; top: 11px; transform: translateX(-50%); }
+  .content { flex: 1; overflow: hidden; padding: 8px 20px 0 20px; position: relative; }
+  .margin-line::before { content: ""; position: absolute; left: 44px; top: 0; bottom: 0; width: 2px; background: var(--margin); opacity: .55; }
+  h1 { font: 800 34px/1.05 "Bricolage Grotesque"; letter-spacing: -.5px; margin: 6px 0 4px; }
+  h2 { font: 700 20px/1.2 "Bricolage Grotesque"; }
+  .sub { color: var(--pencil); font-size: 15px; }
+  .tabbar { height: 84px; flex-shrink: 0; background: var(--white); border-top: 2px solid var(--ink); display: flex; justify-content: space-around; padding-top: 10px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--pencil); }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .tab.on { color: var(--ink); font-weight: 700; }
+
+  /* Hours */
+  .tally-card { background: var(--white); border: 2px solid var(--ink); border-radius: 6px; padding: 16px 18px; margin: 14px 0 18px; position: relative; }
+  .tally-card .big { font: 800 56px/1 "Bricolage Grotesque"; letter-spacing: -1.5px; }
+  .tally-card .big small { font-size: 22px; font-weight: 500; color: var(--pencil); letter-spacing: 0; }
+  .tallies { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .tallies svg { width: 30px; height: 26px; }
+  .row { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; padding: 14px 0; border-bottom: 1.5px solid #C3CFDF; align-items: start; }
+  .row .day { font: 700 13px/1.1 "Atkinson Hyperlegible"; color: var(--margin); text-align: center; }
+  .row .day b { display: block; font: 800 20px "Bricolage Grotesque"; color: var(--ink); }
+  .row .place { font-weight: 700; font-size: 16px; }
+  .row .meta { color: var(--pencil); font-size: 13px; margin-top: 2px; }
+  .row .hrs { font: 800 22px "Bricolage Grotesque"; text-align: right; }
+  .sig-chip { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 700; padding: 2px 8px; background: linear-gradient(transparent 20%, var(--hl) 20%, var(--hl) 85%, transparent 85%); }
+  .needs { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--margin); border: 1.5px dashed var(--margin); padding: 2px 8px; border-radius: 4px; }
+  .fab { position: absolute; right: 20px; bottom: 18px; background: var(--ink); color: var(--white); font-weight: 700; padding: 14px 20px; border-radius: 30px; font-size: 16px; box-shadow: 0 6px 16px rgba(29,43,83,.35); }
+  .topbar { display: flex; justify-content: space-between; align-items: center; font-size: 16px; padding-top: 2px; }
+  .topbar .link { font-weight: 700; }
+
+  /* Form */
+  .field { background: var(--white); border: 2px solid var(--ink); border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; }
+  .field label { display: block; font-size: 12px; color: var(--pencil); font-weight: 700; }
+  .field div { font-size: 17px; min-height: 22px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 8px; }
+  .sigbox { border: 2px dashed var(--ink); background: var(--white); border-radius: 6px; height: 112px; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 14px; position: relative; }
+  .sigbox .line { border-top: 2px solid var(--ink); padding-top: 6px; font-size: 13px; color: var(--pencil); display: flex; justify-content: space-between; }
+  .sigbox .x { position: absolute; left: 14px; bottom: 44px; font: 800 26px "Bricolage Grotesque"; }
+  .sigbox .tap { position: absolute; top: 26px; left: 0; right: 0; text-align: center; font-weight: 700; font-size: 15px; }
+  .btn { display: block; text-align: center; background: var(--ink); color: var(--white); font-weight: 700; padding: 15px; border-radius: 30px; margin-top: 14px; font-size: 17px; }
+
+  /* Signature */
+  .sign { background: var(--white); background-image: none; }
+  .sign .content { padding: 4px 24px; display: flex; flex-direction: column; }
+  .summary { border-left: 4px solid var(--margin); padding: 4px 0 4px 12px; margin: 14px 0 18px; font-size: 15px; line-height: 1.45; }
+  .summary b { font-size: 17px; }
+  .canvas { flex: 1; border: 2px solid var(--ink); border-radius: 8px; position: relative; background-image: linear-gradient(var(--grid) 1px, transparent 1px); background-size: 100% 32px; margin-bottom: 14px; }
+  .canvas .baseline { position: absolute; left: 20px; right: 20px; bottom: 70px; border-top: 2px solid var(--ink); }
+  .canvas .x { position: absolute; left: 22px; bottom: 76px; font: 800 30px "Bricolage Grotesque"; }
+  .canvas svg { position: absolute; left: 40px; bottom: 58px; width: 260px; height: 120px; }
+  .canvas .hint { position: absolute; bottom: 36px; left: 20px; color: var(--pencil); font-size: 13px; }
+  .actions { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; padding-bottom: 30px; }
+  .ghost { text-align: center; border: 2px solid var(--ink); border-radius: 30px; padding: 13px; font-weight: 700; font-size: 17px; }
+  .actions .btn { margin: 0; }
+  .attest { font-size: 13px; color: var(--pencil); margin-bottom: 12px; line-height: 1.4; }
+
+  /* Opportunities */
+  .opp { background: var(--white); border: 2px solid var(--ink); border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+  .opp .when { font-size: 13px; font-weight: 700; color: var(--margin); }
+  .opp h2 { margin: 2px 0 2px; }
+  .opp .org { color: var(--pencil); font-size: 14px; }
+  .spots { display: flex; gap: 4px; margin-top: 12px; align-items: center; }
+  .spots i { width: 18px; height: 18px; border: 2px solid var(--ink); border-radius: 3px; display: inline-block; }
+  .spots i.f { background: var(--ink); }
+  .spots span { margin-left: 8px; font-size: 14px; font-weight: 700; }
+  .chips { display: flex; gap: 8px; margin: 12px 0 14px; }
+  .chip { border: 2px solid var(--ink); border-radius: 20px; padding: 5px 12px; font-size: 14px; font-weight: 700; background: var(--white); }
+  .chip.on { background: var(--ink); color: var(--white); }
+  .going { display: inline-block; background: var(--hl); font-size: 12px; font-weight: 700; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+
+  /* Calendar */
+  .cal { background: var(--white); border: 2px solid var(--ink); border-radius: 6px; padding: 12px 10px; margin: 12px 0 14px; }
+  .cal-head { display: flex; justify-content: space-between; padding: 0 6px 8px; font: 700 18px "Bricolage Grotesque"; }
+  .grid7 { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; row-gap: 4px; }
+  .grid7 .dow { font-size: 12px; color: var(--pencil); font-weight: 700; padding-bottom: 4px; }
+  .grid7 .d { font-size: 15px; height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+  .grid7 .d.mute { color: #B4BDCB; }
+  .grid7 .d.today span { background: var(--ink); color: var(--white); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .grid7 .d.sel span { outline: 2px solid var(--margin); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--margin); position: absolute; bottom: 1px; }
+  .dot.y { background: #C9A400; }
+  .ev { display: grid; grid-template-columns: 60px 1fr; gap: 10px; padding: 12px 0; border-bottom: 1.5px solid #C3CFDF; }
+  .ev .t { font-weight: 700; font-size: 14px; }
+  .ev .n { font-weight: 700; font-size: 16px; }
+  .ev .m { font-size: 13px; color: var(--pencil); }
+  .tag { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 3px; border: 1.5px solid var(--ink); margin-left: 4px; }
+  .synced { font-size: 13px; color: var(--pencil); display: flex; gap: 6px; align-items: center; margin-top: 12px; }
+
+  /* Attendees */
+  .count { display: flex; align-items: baseline; gap: 8px; margin: 10px 0 4px; }
+  .count b { font: 800 44px "Bricolage Grotesque"; }
+  .bar { height: 14px; border: 2px solid var(--ink); border-radius: 3px; background: var(--white); margin: 8px 0 16px; position: relative; overflow: hidden; }
+  .bar i { position: absolute; inset: 0 auto 0 0; width: 62.5%; background: var(--hl); border-right: 2px solid var(--ink); }
+  .person { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1.5px solid #C3CFDF; }
+  .av { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; font: 700 15px "Bricolage Grotesque"; background: var(--white); }
+  .person .n { font-weight: 700; font-size: 16px; }
+  .person .m { font-size: 13px; color: var(--pencil); }
+  .acts { display: flex; gap: 8px; }
+  .acts span { width: 36px; height: 36px; border: 2px solid var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--white); }
+  .acts svg { width: 18px; height: 18px; stroke: var(--ink); fill: none; stroke-width: 2; }
+</style>
+</head>
+<body>
+<div class="board">
+
+<!-- 1. Hours -->
+<div><p class="caption">Hours log</p>
+<div class="phone">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <h1>My hours</h1>
+    <p class="sub">Maya Chen · Lincoln High, grade 11</p>
+    <div class="tally-card">
+      <div class="big">32.5 <small>hours signed</small></div>
+      <div class="tallies">
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20M16 3v20M22 3v20M1 20 27 6"/></g></svg>
+        <svg viewBox="0 0 30 26"><g stroke="#1D2B53" stroke-width="2.4" stroke-linecap="round"><path d="M4 3v20M10 3v20"/></g></svg>
+      </div>
+    </div>
+    <div class="row"><div class="day">Oct<b>3</b></div><div><div class="place">Lakeview Animal Shelter</div><div class="meta">10:00 AM · Kennel cleaning</div><span class="needs">Needs signature</span></div><div class="hrs">4</div></div>
+    <div class="row"><div class="day">Sep<b>27</b></div><div><div class="place">Riverside Food Bank</div><div class="meta">9:00 AM · Saturday pantry shift</div><span class="sig-chip">✓ Signed by D. Alvarez</span></div><div class="hrs">3</div></div>
+    <div class="row"><div class="day">Sep<b>20</b></div><div><div class="place">Habitat for Humanity</div><div class="meta">8:00 AM · Framing crew</div><span class="sig-chip">✓ Signed by R. Okafor</span></div><div class="hrs">6</div></div>
+    <div class="row"><div class="day">Sep<b>14</b></div><div><div class="place">Oak Hill Library</div><div class="meta">1:00 PM · Book sale setup</div><span class="sig-chip">✓ Signed by J. Park</span></div><div class="hrs">2.5</div></div>
+    <div class="fab">+ Log hours</div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 2. New log -->
+<div><p class="caption">New log entry</p>
+<div class="phone">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <div class="topbar"><span>Cancel</span><span class="link">Save</span></div>
+    <h1>Log hours</h1>
+    <div style="height:10px"></div>
+    <div class="field"><label>Place name</label><div>Lakeview Animal Shelter</div></div>
+    <div class="field"><label>Address</label><div>412 Shoreline Rd, Lakeview</div></div>
+    <div class="two">
+      <div class="field"><label>Date</label><div>Oct 3</div></div>
+      <div class="field"><label>Start</label><div>10:00 AM</div></div>
+      <div class="field"><label>Hours</label><div>4</div></div>
+    </div>
+    <div class="field"><label>Comments</label><div style="min-height:44px">Cleaned kennels, walked 6 dogs, helped with the adoption event check-in table.</div></div>
+    <div class="sigbox">
+      <div class="tap">Tap to have your supervisor sign</div>
+      <div class="x">✕</div>
+      <div class="line"><span>Supervisor signature</span><span>Required</span></div>
+    </div>
+    <span class="btn">Save entry</span>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 3. Signature -->
+<div><p class="caption">Supervisor sign-off (full screen)</p>
+<div class="phone sign">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <h1>Sign off on these hours</h1>
+    <div class="summary"><b>4 hours at Lakeview Animal Shelter</b><br>Saturday, Oct 3 · from 10:00 AM<br>Volunteer: Maya Chen</div>
+    <div class="field"><label>Your name</label><div>Dana Whitfield</div></div>
+    <div class="field"><label>Your role</label><div>Volunteer coordinator</div></div>
+    <div class="canvas">
+      <div class="x">✕</div>
+      <svg viewBox="0 0 260 120"><path d="M8 88c14-40 26-70 34-66 9 5-14 62-6 64 9 2 22-38 32-36 8 2-4 28 4 28 10 0 16-26 26-24 8 2 0 22 10 22 12 0 22-30 34-30 10 0 2 26 14 26 14 0 30-20 44-34M30 104c50-6 120-10 200-14" fill="none" stroke="#1D2B53" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="baseline"></div>
+      <div class="hint">Sign with your finger above the line</div>
+    </div>
+    <p class="attest">By signing, you confirm Maya volunteered these hours. Signed entries can't be edited.</p>
+    <div class="actions"><span class="ghost">Clear</span><span class="btn">Sign and lock</span></div>
+  </div>
+</div></div>
+
+<!-- 4. Opportunities -->
+<div><p class="caption">Opportunities</p>
+<div class="phone">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <h1>Opportunities</h1>
+    <div class="chips"><span class="chip on">Upcoming</span><span class="chip">This week</span><span class="chip">Going</span></div>
+    <div class="opp"><div class="when">Sat, Oct 10 · 9:00 AM · 3 hrs</div><h2>Saturday pantry shift<span class="going">Going</span></h2><div class="org">Riverside Food Bank · 88 Mill St</div>
+      <div class="spots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><span>3 of 8 spots left</span></div></div>
+    <div class="opp"><div class="when">Sun, Oct 11 · 8:30 AM · 4 hrs</div><h2>Mill Creek trail cleanup</h2><div class="org">Friends of Mill Creek · Trailhead lot B</div>
+      <div class="spots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><span>1 of 10 left</span></div></div>
+    <div class="opp"><div class="when">Tue, Oct 13 · 3:30 PM · 1.5 hrs</div><h2>Reading buddies</h2><div class="org">Oak Hill Library · 200 Oak Hill Ave</div>
+      <div class="spots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><span>4 of 6 spots left</span></div></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Hours</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 5. Calendar -->
+<div><p class="caption">Calendar</p>
+<div class="phone">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <div class="topbar"><h1>Calendar</h1><span class="link" style="font-size:28px">+</span></div>
+    <div class="cal">
+      <div class="cal-head"><span>‹</span><span>October 2026</span><span>›</span></div>
+      <div class="grid7">
+        <div class="dow">S</div><div class="dow">M</div><div class="dow">T</div><div class="dow">W</div><div class="dow">T</div><div class="dow">F</div><div class="dow">S</div>
+        <div class="d mute">27</div><div class="d mute">28</div><div class="d mute">29</div><div class="d mute">30</div><div class="d">1</div><div class="d">2</div><div class="d">3</div>
+        <div class="d today"><span>4</span></div><div class="d">5</div><div class="d">6</div><div class="d">7</div><div class="d">8</div><div class="d">9</div><div class="d sel"><span>10</span><i class="dot"></i></div>
+        <div class="d">11</div><div class="d">12</div><div class="d">13<i class="dot y"></i></div><div class="d">14</div><div class="d">15</div><div class="d">16</div><div class="d">17<i class="dot"></i></div>
+        <div class="d">18</div><div class="d">19</div><div class="d">20</div><div class="d">21</div><div class="d">22</div><div class="d">23</div><div class="d">24<i class="dot y"></i></div>
+        <div class="d">25</div><div class="d">26</div><div class="d">27</div><div class="d">28</div><div class="d">29</div><div class="d">30</div><div class="d">31</div>
+      </div>
+    </div>
+    <h2>Saturday, Oct 10</h2>
+    <div class="ev"><div class="t">9:00 AM<br><span class="sub" style="font-size:12px">3 hrs</span></div><div><div class="n">Saturday pantry shift <span class="tag">Signed up</span></div><div class="m">Riverside Food Bank · 88 Mill St</div></div></div>
+    <div class="ev"><div class="t">2:00 PM<br><span class="sub" style="font-size:12px">1 hr</span></div><div><div class="n">Drop off coat drive boxes <span class="tag" style="border-style:dashed">My entry</span></div><div class="m">St. Mark's Community Center</div></div></div>
+    <div class="synced">✓ Synced to iPhone Calendar</div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>Opportunities</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 6. Operator attendees -->
+<div><p class="caption">Operator: who's coming</p>
+<div class="phone">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <div class="topbar"><span>‹ My listings</span><span class="link">Edit</span></div>
+    <h1 style="font-size:30px">Saturday pantry shift</h1>
+    <p class="sub">Sat, Oct 10 · 9:00 AM · 3 hrs · 88 Mill St</p>
+    <div class="count"><b>5</b><span>of 8 volunteers signed up · 3 more needed</span></div>
+    <div class="bar"><i></i></div>
+    <div class="person"><div class="av">MC</div><div><div class="n">Maya Chen</div><div class="m">Lincoln High · Grade 11<br>(555) 201-4432</div></div><div class="acts"><span><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+    <div class="person"><div class="av">JR</div><div><div class="n">Jordan Reyes</div><div class="m">Lincoln High · Grade 12<br>jordan.reyes@lhs.edu</div></div><div class="acts"><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+    <div class="person"><div class="av">AP</div><div><div class="n">Aisha Patel</div><div class="m">Westbrook Academy · Grade 10<br>(555) 877-0912</div></div><div class="acts"><span><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+    <div class="person"><div class="av">TN</div><div><div class="n">Theo Nguyen</div><div class="m">Lincoln High · Grade 9<br>(555) 340-1187</div></div><div class="acts"><span><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My listings</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+</div>
+</body>
+</html>

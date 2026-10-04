@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design B — Letterman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #123B2A;
+    --forest-2: #1B4D38;
+    --gold: #F2B33D;
+    --chalk: #EEF1EC;
+    --ink: #0F1A14;
+    --felt: #B8322A;
+    --mute: #5E6B63;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #CFD6CF; font-family: "Figtree", sans-serif; color: var(--ink); padding: 48px; }
+  .board { display: flex; gap: 40px; align-items: flex-start; }
+  .caption { font: 700 15px/1.3 "Figtree"; margin: 0 0 12px 6px; }
+  .phone { width: 393px; height: 852px; border-radius: 54px; overflow: hidden; position: relative; background: var(--chalk); box-shadow: 0 0 0 10px #0A1F16, 0 30px 60px rgba(10,31,22,.35); display: flex; flex-direction: column; }
+  .status { height: 54px; display: flex; justify-content: space-between; align-items: center; padding: 14px 34px 0; font: 700 16px "Figtree"; flex-shrink: 0; }
+  .dark .status, .hero .status { color: var(--white); }
+  .island { width: 124px; height: 36px; background: #000; border-radius: 20px; position: absolute; left: 50%; top: 11px; transform: translateX(-50%); }
+  .hero { background: var(--forest); color: var(--white); position: relative; flex-shrink: 0; }
+  .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px; background: repeating-linear-gradient(90deg, var(--gold) 0 18px, var(--forest) 18px 26px); }
+  .hero-in { padding: 4px 22px 26px; }
+  .display { font-family: "Big Shoulders Display"; font-weight: 900; text-transform: none; line-height: .9; }
+  .content { flex: 1; overflow: hidden; padding: 16px 18px 0; position: relative; }
+  .tabbar { height: 84px; flex-shrink: 0; background: var(--forest); display: flex; justify-content: space-around; padding-top: 12px; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: #9DB5A8; font-weight: 600; }
+  .tab svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .tab.on { color: var(--gold); }
+  .muted { color: var(--mute); }
+
+  /* Hours hero */
+  .goal { display: flex; align-items: flex-end; gap: 10px; margin-top: 6px; }
+  .goal .n { font-size: 112px; color: var(--gold); letter-spacing: -2px; }
+  .goal .of { font-size: 40px; color: var(--white); padding-bottom: 12px; }
+  .goal-label { font-size: 15px; color: #CFE0D6; }
+  .track { display: flex; gap: 3px; margin-top: 14px; }
+  .track i { flex: 1; height: 10px; background: var(--forest-2); border-radius: 2px; }
+  .track i.f { background: var(--gold); }
+  .hello { font-size: 15px; color: #CFE0D6; font-weight: 600; }
+
+  .log { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 14px 14px; background: var(--white); border-radius: 14px; margin-bottom: 10px; }
+  .log .p { font-weight: 700; font-size: 16px; }
+  .log .m { font-size: 13px; color: var(--mute); }
+  .log .h { grid-row: span 2; text-align: center; }
+  .log .h b { font: 900 34px/1 "Big Shoulders Display"; display: block; }
+  .log .h span { font-size: 11px; color: var(--mute); font-weight: 600; }
+  .patch { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--forest); }
+  .patch .seal { width: 22px; height: 22px; border-radius: 50%; background: var(--forest); color: var(--gold); border: 2px dashed var(--gold); outline: 2px solid var(--forest); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .unsigned { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--white); background: var(--felt); border-radius: 6px; padding: 3px 8px; }
+  .section { display: flex; justify-content: space-between; align-items: baseline; margin: 2px 4px 10px; }
+  .section h3 { font: 800 22px "Big Shoulders Display"; }
+  .section a { font-weight: 700; font-size: 14px; color: var(--forest); }
+  .fab { position: absolute; right: 18px; bottom: 18px; width: 64px; height: 64px; border-radius: 50%; background: var(--gold); color: var(--forest); font: 900 40px/64px "Big Shoulders Display"; text-align: center; box-shadow: 0 8px 18px rgba(18,59,42,.35); border: 3px solid var(--forest); }
+
+  /* Form */
+  .bar-title { display: flex; justify-content: space-between; align-items: center; padding: 6px 22px 0; font-weight: 600; }
+  .bar-title b { color: var(--gold); }
+  .fgroup { background: var(--white); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+  .frow { padding: 11px 14px; border-bottom: 1px solid #E1E6E1; display: flex; justify-content: space-between; gap: 12px; font-size: 16px; }
+  .frow:last-child { border-bottom: 0; }
+  .frow label { color: var(--mute); font-size: 15px; }
+  .frow .v { font-weight: 600; text-align: right; }
+  .stepper { display: flex; align-items: center; gap: 10px; }
+  .stepper span { width: 30px; height: 30px; border-radius: 8px; background: var(--chalk); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .stepper b { font: 900 26px "Big Shoulders Display"; min-width: 30px; text-align: center; }
+  .sign-cta { background: var(--forest); color: var(--white); border-radius: 14px; padding: 18px; display: flex; align-items: center; gap: 14px; }
+  .sign-cta .pen { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sign-cta .pen svg { width: 24px; height: 24px; stroke: var(--forest); fill: none; stroke-width: 2.2; }
+  .sign-cta b { display: block; font-size: 17px; }
+  .sign-cta span { font-size: 13px; color: #CFE0D6; }
+  .req { color: var(--felt); font-size: 12px; font-weight: 700; margin: 8px 4px 0; }
+
+  /* Signature (dark full screen) */
+  .dark { background: var(--forest); color: var(--white); }
+  .dark .content { display: flex; flex-direction: column; padding: 4px 22px 30px; }
+  .dark h1 { font: 900 44px/.95 "Big Shoulders Display"; color: var(--gold); margin: 8px 0 10px; }
+  .dark .who { font-size: 15px; color: #CFE0D6; line-height: 1.45; margin-bottom: 14px; }
+  .dark .who b { color: var(--white); }
+  .namefield { background: var(--forest-2); border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; }
+  .namefield label { font-size: 12px; color: #9DB5A8; font-weight: 600; display: block; }
+  .namefield div { font-size: 17px; font-weight: 600; }
+  .pad { flex: 1; background: var(--white); border-radius: 16px; position: relative; margin: 6px 0 14px; }
+  .pad svg { position: absolute; left: 30px; top: 50px; width: 280px; height: 130px; }
+  .pad .line { position: absolute; left: 22px; right: 22px; bottom: 64px; border-top: 2px dashed var(--forest); }
+  .pad .lbl { position: absolute; left: 22px; bottom: 38px; font-size: 13px; color: var(--mute); }
+  .pad .clr { position: absolute; right: 14px; top: 12px; font-size: 14px; font-weight: 700; color: var(--forest); background: var(--chalk); border-radius: 20px; padding: 6px 12px; }
+  .gold-btn { display: block; text-align: center; background: var(--gold); color: var(--forest); font-weight: 800; padding: 16px; border-radius: 14px; font-size: 18px; }
+  .fine { font-size: 12.5px; color: #9DB5A8; margin-top: 10px; text-align: center; }
+
+  /* Opportunities */
+  .seg { display: flex; background: var(--white); border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+  .seg span { flex: 1; text-align: center; padding: 8px; border-radius: 9px; font-weight: 700; font-size: 14px; color: var(--mute); }
+  .seg span.on { background: var(--forest); color: var(--white); }
+  .card { background: var(--white); border-radius: 16px; margin-bottom: 12px; display: grid; grid-template-columns: 70px 1fr; overflow: hidden; }
+  .card .date { background: var(--forest); color: var(--white); text-align: center; padding: 14px 4px; }
+  .card .date span { font-size: 13px; font-weight: 600; color: var(--gold); display: block; }
+  .card .date b { font: 900 38px/1 "Big Shoulders Display"; }
+  .card .body { padding: 12px 14px; }
+  .card h2 { font-size: 17px; font-weight: 700; }
+  .card .m { font-size: 13px; color: var(--mute); margin-top: 2px; }
+  .card .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .left { font: 900 20px "Big Shoulders Display"; color: var(--forest); }
+  .left.low { color: var(--felt); }
+  .left small { font: 600 12px "Figtree"; color: var(--mute); }
+  .pill { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 20px; background: var(--gold); color: var(--forest); }
+  .pill.in { background: var(--forest); color: var(--gold); }
+
+  /* Calendar */
+  .weekstrip { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 4px; margin-top: 12px; }
+  .weekstrip div { padding: 8px 0; border-radius: 12px; font-size: 12px; color: #9DB5A8; font-weight: 600; }
+  .weekstrip b { display: block; font: 900 24px "Big Shoulders Display"; color: var(--white); }
+  .weekstrip .sel { background: var(--gold); color: var(--forest); }
+  .weekstrip .sel b { color: var(--forest); }
+  .weekstrip .has::after { content: ""; display: block; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; margin: 3px auto 0; }
+  .weekstrip .sel.has::after { background: var(--forest); }
+  .monthrow { display: flex; justify-content: space-between; align-items: baseline; }
+  .monthrow .display { font-size: 40px; }
+  .monthrow a { font-weight: 700; color: var(--gold); font-size: 14px; }
+  .agenda { display: grid; grid-template-columns: 54px 1fr; gap: 0 12px; }
+  .agenda .time { font: 800 18px/1.1 "Big Shoulders Display"; padding-top: 14px; text-align: right; }
+  .agenda .time span { display: block; font: 600 11px "Figtree"; color: var(--mute); }
+  .agenda .item { border-left: 4px solid var(--forest); background: var(--white); border-radius: 0 12px 12px 0; padding: 12px 14px; margin-bottom: 10px; }
+  .agenda .item.mine { border-left-color: var(--gold); }
+  .agenda .item b { font-size: 16px; display: block; }
+  .agenda .item span { font-size: 13px; color: var(--mute); }
+  .kind { font-size: 11px; font-weight: 700; color: var(--forest); margin-top: 6px; display: inline-block; }
+  .sync { display: flex; justify-content: space-between; align-items: center; background: var(--white); border-radius: 12px; padding: 12px 14px; margin-top: 6px; font-weight: 600; font-size: 15px; }
+  .toggle { width: 50px; height: 30px; border-radius: 16px; background: var(--forest); position: relative; }
+  .toggle::after { content: ""; position: absolute; right: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--gold); }
+
+  /* Operator */
+  .roster-count { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; }
+  .roster-count .n { font-size: 96px; color: var(--gold); }
+  .roster-count .t { font-size: 15px; color: #CFE0D6; padding-bottom: 14px; line-height: 1.3; }
+  .roster-count .t b { color: var(--white); font-size: 18px; }
+  .seats { display: flex; gap: 6px; margin-top: 4px; }
+  .seats i { width: 36px; height: 36px; border-radius: 50%; background: var(--gold); border: 2px dashed var(--forest); outline: 2px solid var(--gold); }
+  .seats i.e { background: transparent; outline-color: #4F7A66; border-color: #4F7A66; }
+  .vol { background: var(--white); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; }
+  .vol b { font-size: 16px; }
+  .vol .m { font-size: 13px; color: var(--mute); }
+  .vol .c { display: flex; gap: 8px; grid-row: span 2; }
+  .vol .c span { width: 38px; height: 38px; border-radius: 10px; background: var(--chalk); display: flex; align-items: center; justify-content: center; }
+  .vol .c svg { width: 18px; height: 18px; stroke: var(--forest); fill: none; stroke-width: 2.2; }
+</style>
+</head>
+<body>
+<div class="board">
+
+<!-- 1 Hours -->
+<div><p class="caption">Hours log</p>
+<div class="phone">
+  <div class="hero">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+    <div class="hero-in">
+      <div class="hello">Maya Chen, Lincoln High</div>
+      <div class="goal"><span class="display n">32.5</span><span class="display of">/ 40 hrs</span></div>
+      <div class="goal-label">7.5 hours to go for your graduation requirement</div>
+      <div class="track"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section"><h3>Recent logs</h3><a>Export</a></div>
+    <div class="log"><div><div class="p">Lakeview Animal Shelter</div><div class="m">Sat, Oct 3 at 10:00 AM</div><span class="unsigned">Needs signature</span></div><div class="h"><b>4</b><span>hours</span></div></div>
+    <div class="log"><div><div class="p">Riverside Food Bank</div><div class="m">Sun, Sep 27 at 9:00 AM</div><span class="patch"><span class="seal">✓</span>Signed by D. Alvarez</span></div><div class="h"><b>3</b><span>hours</span></div></div>
+    <div class="log"><div><div class="p">Habitat for Humanity</div><div class="m">Sun, Sep 20 at 8:00 AM</div><span class="patch"><span class="seal">✓</span>Signed by R. Okafor</span></div><div class="h"><b>6</b><span>hours</span></div></div>
+    <div class="fab">+</div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7z"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 2 New log -->
+<div><p class="caption">New log entry</p>
+<div class="phone">
+  <div class="hero">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+    <div class="bar-title"><span>Cancel</span><b>Save</b></div>
+    <div class="hero-in"><div class="display" style="font-size:52px;margin-top:6px">Log hours</div></div>
+  </div>
+  <div class="content">
+    <div class="fgroup">
+      <div class="frow"><label>Place</label><span class="v">Lakeview Animal Shelter</span></div>
+      <div class="frow"><label>Address</label><span class="v">412 Shoreline Rd</span></div>
+    </div>
+    <div class="fgroup">
+      <div class="frow"><label>Date</label><span class="v">Sat, Oct 3</span></div>
+      <div class="frow"><label>Started</label><span class="v">10:00 AM</span></div>
+      <div class="frow" style="align-items:center"><label>Hours</label><span class="stepper"><span>−</span><b>4</b><span>+</span></span></div>
+    </div>
+    <div class="fgroup"><div class="frow" style="display:block"><label style="display:block;font-size:13px">Comments</label><div style="margin-top:4px;font-size:15px">Cleaned kennels, walked 6 dogs, helped at the adoption check-in table.</div></div></div>
+    <div class="sign-cta"><div class="pen"><svg viewBox="0 0 24 24"><path d="m4 20 4-1 11-11-3-3L5 16zM14 7l3 3"/></svg></div><div><b>Get supervisor signature</b><span>Hand your phone to the person in charge</span></div></div>
+    <p class="req">A signature is required before these hours count.</p>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7z"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 3 Signature -->
+<div><p class="caption">Supervisor sign-off (full screen)</p>
+<div class="phone dark">
+  <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+  <div class="content">
+    <h1>Supervisor sign-off</h1>
+    <p class="who"><b>Maya Chen</b> volunteered <b>4 hours</b> at <b>Lakeview Animal Shelter</b> on Saturday, Oct 3, starting at 10:00 AM.</p>
+    <div class="namefield"><label>Your full name</label><div>Dana Whitfield</div></div>
+    <div class="pad">
+      <span class="clr">Clear</span>
+      <svg viewBox="0 0 280 130"><path d="M8 96c14-40 26-74 34-70 9 5-14 66-6 68 9 2 22-40 32-38 8 2-4 30 4 30 10 0 16-28 26-26 8 2 0 24 10 24 12 0 22-32 34-32 10 0 2 28 14 28 14 0 30-22 52-38M26 112c60-6 130-10 230-14" fill="none" stroke="#123B2A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="line"></div>
+      <div class="lbl">Sign above the line</div>
+    </div>
+    <span class="gold-btn">Confirm and sign</span>
+    <p class="fine">Signed entries are locked and can't be changed.</p>
+  </div>
+</div></div>
+
+<!-- 4 Opportunities -->
+<div><p class="caption">Opportunities</p>
+<div class="phone">
+  <div class="hero">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+    <div class="hero-in"><div class="display" style="font-size:52px;margin-top:6px">Opportunities</div><div class="goal-label" style="margin-top:6px">12 open near Lincoln High this month</div></div>
+  </div>
+  <div class="content">
+    <div class="seg"><span class="on">All upcoming</span><span>Signed up</span></div>
+    <div class="card"><div class="date"><span>Sat</span><b>10</b><span>Oct</span></div><div class="body"><h2>Saturday pantry shift</h2><div class="m">Riverside Food Bank, 88 Mill St</div><div class="m">9:00 AM for 3 hours</div><div class="foot"><span class="left">3 <small>of 8 spots left</small></span><span class="pill in">You're going</span></div></div></div>
+    <div class="card"><div class="date"><span>Sun</span><b>11</b><span>Oct</span></div><div class="body"><h2>Mill Creek trail cleanup</h2><div class="m">Friends of Mill Creek, Trailhead lot B</div><div class="m">8:30 AM for 4 hours</div><div class="foot"><span class="left low">1 <small>of 10 spots left</small></span><span class="pill">Sign up</span></div></div></div>
+    <div class="card"><div class="date"><span>Tue</span><b>13</b><span>Oct</span></div><div class="body"><h2>Reading buddies</h2><div class="m">Oak Hill Library, 200 Oak Hill Ave</div><div class="m">3:30 PM for 1.5 hours</div><div class="foot"><span class="left">4 <small>of 6 spots left</small></span><span class="pill">Sign up</span></div></div></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hours</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7z"/></svg>Opportunities</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 5 Calendar -->
+<div><p class="caption">Calendar</p>
+<div class="phone">
+  <div class="hero">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+    <div class="hero-in">
+      <div class="monthrow"><span class="display">October</span><a>+ Add event</a></div>
+      <div class="weekstrip">
+        <div>Sun<b>4</b></div><div>Mon<b>5</b></div><div>Tue<b>6</b></div><div>Wed<b>7</b></div><div>Thu<b>8</b></div><div>Fri<b>9</b></div><div class="sel has">Sat<b>10</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section"><h3>Saturday, Oct 10</h3><a>Month view</a></div>
+    <div class="agenda">
+      <div class="time">9:00<span>AM</span></div><div class="item"><b>Saturday pantry shift</b><span>Riverside Food Bank, 88 Mill St</span><br><span class="kind">Signed up through the app</span></div>
+      <div class="time">2:00<span>PM</span></div><div class="item mine"><b>Drop off coat drive boxes</b><span>St. Mark's Community Center</span><br><span class="kind" style="color:#9A6A00">Your own event</span></div>
+    </div>
+    <div class="section" style="margin-top:8px"><h3>Coming up</h3></div>
+    <div class="agenda">
+      <div class="time">13<span>Tue</span></div><div class="item"><b>Reading buddies</b><span>Oak Hill Library, 3:30 PM</span></div>
+    </div>
+    <div class="sync"><span>Sync to iPhone Calendar</span><span class="toggle"></span></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hours</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v6c0 4 3.5 7 8 8 4.5-1 8-4 8-8V7z"/></svg>Opportunities</div>
+    <div class="tab on"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+<!-- 6 Operator -->
+<div><p class="caption">Operator: who's coming</p>
+<div class="phone">
+  <div class="hero">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
+    <div class="bar-title"><span>‹ My listings</span><b>Edit</b></div>
+    <div class="hero-in">
+      <div class="display" style="font-size:40px;margin-top:8px">Saturday pantry shift</div>
+      <div class="goal-label" style="margin-top:4px">Sat, Oct 10 at 9:00 AM, 88 Mill St</div>
+      <div class="roster-count"><span class="display n">5</span><span class="t"><b>of 8 signed up</b><br>3 more volunteers needed</span></div>
+      <div class="seats"><i></i><i></i><i></i><i></i><i></i><i class="e"></i><i class="e"></i><i class="e"></i></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="vol"><div><b>Maya Chen</b><div class="m">Lincoln High, grade 11</div><div class="m">(555) 201-4432</div></div><div class="c"><span><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+    <div class="vol"><div><b>Jordan Reyes</b><div class="m">Lincoln High, grade 12</div><div class="m">jordan.reyes@lhs.edu</div></div><div class="c"><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+    <div class="vol"><div><b>Aisha Patel</b><div class="m">Westbrook Academy, grade 10</div><div class="m">(555) 877-0912</div></div><div class="c"><span><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span></div></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My listings</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</div>
+  </div>
+</div></div>
+
+</div>
+</body>
+</html>
