@@ -93,6 +93,10 @@ struct HeroScreen<HeroContent: View, Content: View>: View {
             }
         }
         .background(Theme.chalk)
+        // Keeps scrolled content from showing through behind the status bar.
+        .overlay(alignment: .top) {
+            Color.clear.frame(height: 0).background(Theme.forest.ignoresSafeArea(edges: .top))
+        }
     }
 }
 
@@ -221,6 +225,7 @@ struct DarkField: View {
     let label: String
     @Binding var text: String
     var secure = false
+    @FocusState private var focused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -228,6 +233,7 @@ struct DarkField: View {
             Group {
                 if secure { SecureField("", text: $text) } else { TextField("", text: $text) }
             }
+            .focused($focused)
             .font(.fig(17, .semibold))
             .foregroundStyle(.white)
             .tint(Theme.gold)
@@ -235,6 +241,9 @@ struct DarkField: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(Theme.forest2, in: RoundedRectangle(cornerRadius: 12))
+        // Tapping anywhere in the box, including the label, starts typing.
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .onTapGesture { focused = true }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(label)
     }

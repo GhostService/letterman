@@ -25,7 +25,7 @@ struct LogFormView: View {
                 }
                 Section("When") {
                     DatePicker("Started", selection: $draft.startedAt, in: ...Date().addingTimeInterval(86400))
-                    Stepper(value: $draft.hours, in: 0.25...24, step: 0.25) {
+                    Stepper(value: $draft.hours, in: 0.5...24, step: 0.5) {
                         HStack {
                             Text("Hours")
                             Spacer()
@@ -50,9 +50,9 @@ struct LogFormView: View {
             .navigationBarTitleDisplayMode(.inline)
             .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { Task { await save() } }.bold().disabled(!canSave)
+                    Button("Save") { Task { await save() } }.bold().tint(Theme.gold).disabled(!canSave)
                 }
             }
             .fullScreenCover(isPresented: $signing) {
@@ -92,7 +92,8 @@ struct LogFormView: View {
                         .frame(width: 46, height: 46).background(Circle().fill(Theme.gold))
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Get supervisor signature").font(.fig(17, .bold)).foregroundStyle(.white)
-                        Text("Hand your phone to the person in charge").font(.fig(13)).foregroundStyle(Theme.heroText)
+                        Text(draft.placeName.trimmed.isEmpty ? "Add the place name first" : "Hand your phone to the person in charge")
+                            .font(.fig(13)).foregroundStyle(Theme.heroText)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

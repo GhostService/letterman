@@ -21,7 +21,6 @@ struct AgendaView: View {
                 Text("Your sign-ups and your own volunteering plans.").font(.fig(15)).foregroundStyle(Theme.heroText)
             } content: {
                 MonthCalendar(eventDays: eventDays, selected: $selectedDay)
-                    .frame(height: 400)
                     .card(padding: 6)
 
                 SectionHeader(selectedDay.formatted(.dateTime.weekday(.wide).month(.wide).day()))
@@ -57,9 +56,7 @@ struct AgendaView: View {
         }
     }
 
-    private var eventDays: Set<DateComponents> {
-        Set(store.agenda.map { Calendar.current.dateComponents([.year, .month, .day], from: $0.start) })
-    }
+    private var eventDays: Set<Day> { Set(store.agenda.map { Day($0.start) }) }
 
     private func items(on day: Date) -> [AgendaItem] {
         store.agenda.filter { Calendar.current.isDate($0.start, inSameDayAs: day) }
@@ -122,7 +119,7 @@ extension AgendaItem.Kind {
 
 /// Native month calendar with a dot on days that have something planned.
 struct MonthCalendar: UIViewRepresentable {
-    var eventDays: Set<DateComponents>
+    var eventDays: Set<Day>
     @Binding var selected: Date
 
     func makeUIView(context: Context) -> UICalendarView {
@@ -133,34 +130,66 @@ struct MonthCalendar: UIViewRepresentable {
         let selection = UICalendarSelectionSingleDate(delegate: context.coordinator)
         selection.selectedDate = Calendar.current.dateComponents([.year, .month, .day], from: selected)
         view.selectionBehavior = selection
-        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        // Known before the first draw, so the first month shows its dots.
+        context.coordinator.eventDays = eventDays
         return view
+    }
+
+    /// UICalendarView wants to be wider than the screen; make it fit the width SwiftUI offers
+    /// and take the height it needs for that width (6 week rows when needed).
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UICalendarView, context: Context) -> CGSize? {
+        let width = proposal.width ?? 360
+        let height = uiView.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
+                                                    withHorizontalFittingPriority: .required,
+                                                    verticalFittingPriority: .fittingSizeLevel).height
+        return CGSize(width: width, height: height)
     }
 
     func updateUIView(_ view: UICalendarView, context: Context) {
         let changed = context.coordinator.eventDays.symmetricDifference(eventDays)
         context.coordinator.eventDays = eventDays
         context.coordinator.selected = $selected
-        if !changed.isEmpty { view.reloadDecorations(forDateComponents: Array(changed), animated: true) }
+        if !changed.isEmpty { view.reloadDecorations(forDateComponents: changed.map(\.components), animated: true) }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(selected: $selected) }
 
     final class Coordinator: NSObject, UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
-        var eventDays: Set<DateComponents> = []
+        var eventDays: Set<Day> = []
         var selected: Binding<Date>
 
         init(selected: Binding<Date>) { self.selected = selected }
 
         func calendarView(_ view: UICalendarView, decorationFor date: DateComponents) -> UICalendarView.Decoration? {
-            let key = DateComponents(year: date.year, month: date.month, day: date.day)
-            return eventDays.contains(key) ? .default(color: UIColor(Theme.gold), size: .large) : nil
+            guard let year = date.year, let month = date.month, let day = date.day else { return nil }
+            return eventDays.contains(Day(year: year, month: month, day: day)) ? .default(color: UIColor(Theme.gold), size: .large) : nil
         }
 
         func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate date: DateComponents?) {
             if let date, let day = Calendar.current.date(from: date) { selected.wrappedValue = day }
         }
     }
+}
+
+/// A calendar day. Used instead of DateComponents as a Set key: two DateComponents can be ==
+/// yet hash differently (isLeapMonth false vs nil), which silently breaks Set lookups.
+struct Day: Hashable {
+    let year: Int
+    let month: Int
+    let day: Int
+
+    init(year: Int, month: Int, day: Int) {
+        self.year = year
+        self.month = month
+        self.day = day
+    }
+
+    init(_ date: Date) {
+        let c = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        self.init(year: c.year!, month: c.month!, day: c.day!)
+    }
+
+    var components: DateComponents { DateComponents(year: year, month: month, day: day) }
 }
 
 struct EventEditor: Identifiable {
@@ -221,7 +250,7 @@ struct EventFormView: View {
             .navigationBarTitleDisplayMode(.inline)
             .forestNavBar()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.gold) }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         run {
@@ -232,6 +261,7 @@ struct EventFormView: View {
                         }
                     }
                     .bold()
+                    .tint(Theme.gold)
                     .disabled(title.trimmed.isEmpty || busy)
                 }
             }
