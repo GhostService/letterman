@@ -1,4 +1,4 @@
-# Hour Tracker
+# Letterman
 
 An iPhone app for high-school students to log volunteer hours, get each entry signed on-screen by the supervisor, find volunteer opportunities posted by local organizations, and keep it all on a calendar that syncs to the iPhone Calendar app.
 
@@ -44,14 +44,14 @@ Quick local run (after downloading PocketBase, see [FIRST_SETUP.md](FIRST_SETUP.
 ```bash
 cd server && ./dev.sh                  # terminal 1
 cd server && python3 dev_seed.py       # terminal 2, demo data
-open HourTracker.xcodeproj             # then press Run
+open Letterman.xcodeproj             # then press Run
 ```
 
 ## Project layout
 
 ```
-HourTracker/          iOS app (SwiftUI)
-HourTracker.xcodeproj generated from project.yml by XcodeGen
+Letterman/          iOS app (SwiftUI)
+Letterman.xcodeproj generated from project.yml by XcodeGen
 project.yml           app name, bundle id, iOS version, permissions
 server/
   pb_migrations/      database tables + security rules
@@ -64,20 +64,14 @@ FIRST_SETUP.md        start here
 docs/                 maintenance, privacy, architecture, designs, screenshots
 ```
 
-## Name ideas
+## Name
 
-"Hour Tracker" is a placeholder. Some ideas for a real name:
+**Letterman**, like earning your varsity letter: the hours you put in, stitched on and made official. It matches the green-and-gold patch design.
 
-- **Signoff**: the moment that matters, the supervisor signing.
-- **Tally**: counting up your hours.
-- **Pitch In**: friendly and about the doing.
-- **Letterman**: matches the design (earning your letter).
-- **Logged**: short and clear.
-
-To rename, change `CFBundleDisplayName` in `project.yml`, run `xcodegen`, and update the title on the sign-in screen (`HourTracker/UI/AuthView.swift`).
+The name shown on the home screen is `CFBundleDisplayName` in `project.yml` (run `xcodegen` after changing it), plus the title on the sign-in screen (`Letterman/UI/AuthView.swift`).
 
 ## Design
 
 Three directions were prototyped (`docs/designs/`). **B · Letterman** was chosen: forest green and varsity gold, with big condensed numbers and a stitched "patch" for signed hours.
 
-Fonts: [Big Shoulders Display](https://fonts.google.com/specimen/Big+Shoulders+Display) and [Figtree](https://fonts.google.com/specimen/Figtree), both under the SIL Open Font License (license files in `HourTracker/Fonts/`).
+Fonts: [Big Shoulders Display](https://fonts.google.com/specimen/Big+Shoulders+Display) and [Figtree](https://fonts.google.com/specimen/Figtree), both under the SIL Open Font License (license files in `Letterman/Fonts/`).

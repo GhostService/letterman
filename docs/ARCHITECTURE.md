@@ -16,7 +16,7 @@
 **Why these choices**
 
 - **SwiftUI, no SDKs.** Native iOS gives PencilKit (signatures), EventKit (Calendar sync) and a native month calendar for free. The only third-party package is [libxlsxwriter](https://github.com/jmcnamara/libxlsxwriter), used for the Excel export, because a spreadsheet with embedded pictures isn't something to hand-write.
-- **PocketBase** is one ~40 MB program with auth, database, admin UI, email and backups. That's the least to run and maintain on a single VPS. Its REST API is small enough that the app talks to it with ~150 lines of `URLSession` (`HourTracker/Core/PocketBase.swift`).
+- **PocketBase** is one ~40 MB program with auth, database, admin UI, email and backups. That's the least to run and maintain on a single VPS. Its REST API is small enough that the app talks to it with ~150 lines of `URLSession` (`Letterman/Core/PocketBase.swift`).
 - **The server enforces every rule.** The app is treated as untrusted; API rules in the migration and checks in hooks decide who can do what. `server/smoke_test.py` proves each rule.
 
 ## Data model
@@ -58,8 +58,8 @@ Deleting a user cascades to their logs, sign-ups (freeing spots) and calendar en
 ## The iOS app
 
 ```
-HourTracker/
-  HourTrackerApp.swift   app entry, routes to sign-in / verify email / volunteer tabs / operator tabs
+Letterman/
+  LettermanApp.swift   app entry, routes to sign-in / verify email / volunteer tabs / operator tabs
   Core/
     Config.swift          server URL (local server in the Simulator, real server everywhere else)
     PocketBase.swift      REST client, error messages, date format

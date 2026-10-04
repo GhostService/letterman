@@ -50,7 +50,7 @@ The Simulator version talks to a test copy of the server running on your Mac, so
 In Terminal, go to the project folder and download it into `server/`:
 
 ```bash
-cd ~/Desktop/hour-tracker/server
+cd ~/Desktop/letterman/server
 curl -LO https://github.com/pocketbase/pocketbase/releases/download/v0.40.4/pocketbase_0.40.4_darwin_arm64.zip
 unzip -o pocketbase_0.40.4_darwin_arm64.zip pocketbase && rm pocketbase_0.40.4_darwin_arm64.zip
 ```
@@ -72,7 +72,7 @@ If macOS asks whether `pocketbase` may accept incoming network connections, eith
 Open a **second** Terminal window:
 
 ```bash
-cd ~/Desktop/hour-tracker/server
+cd ~/Desktop/letterman/server
 python3 dev_seed.py
 ```
 
@@ -89,7 +89,7 @@ The test dashboard is at http://127.0.0.1:8090/_/
 ### A4. Run the app
 
 ```bash
-open ~/Desktop/hour-tracker/HourTracker.xcodeproj
+open ~/Desktop/letterman/Letterman.xcodeproj
 ```
 
 In Xcode, choose an iPhone simulator from the device menu at the top middle (e.g. "iPhone 17"), then press **▶** (or ⌘R). The first build takes a minute or two.
@@ -109,7 +109,7 @@ In Xcode, choose an iPhone simulator from the device menu at the top middle (e.g
 ### A6. Run the security checks (optional, but good to know)
 
 ```bash
-cd ~/Desktop/hour-tracker/server
+cd ~/Desktop/letterman/server
 python3 smoke_test.py
 ```
 
@@ -117,7 +117,7 @@ This starts its own throwaway server and checks 44 rules: students can't read ea
 
 ### A7. Starting over
 
-Stop `./dev.sh`, delete the test data with `rm -rf ~/Desktop/hour-tracker/server/pb_data`, then repeat A2 and A3.
+Stop `./dev.sh`, delete the test data with `rm -rf ~/Desktop/letterman/server/pb_data`, then repeat A2 and A3.
 
 ---
 
@@ -132,10 +132,10 @@ iPhone app ──HTTPS──▶ Caddy (handles the free HTTPS certificate)
                    PocketBase (only reachable from inside the server)
                          │
                          ▼
-             /opt/hourtracker/pb_data  (database + nightly backups)
+             /opt/letterman/pb_data  (database + nightly backups)
 ```
 
-Commands starting with `sudo` run **on the VPS** (after `ssh you@VPS_IP`). Steps that say **on your Mac** run in Terminal on your Mac, from the project folder (`cd ~/Desktop/hour-tracker`).
+Commands starting with `sudo` run **on the VPS** (after `ssh you@VPS_IP`). Steps that say **on your Mac** run in Terminal on your Mac, from the project folder (`cd ~/Desktop/letterman`).
 
 ### B1. Point the domain at the VPS
 
@@ -179,12 +179,12 @@ uname -m
 `x86_64` → use `linux_amd64` below. `aarch64` → use `linux_arm64`.
 
 ```bash
-sudo useradd --system --home /opt/hourtracker --shell /usr/sbin/nologin pocketbase
-sudo mkdir -p /opt/hourtracker/pb_data
+sudo useradd --system --home /opt/letterman --shell /usr/sbin/nologin pocketbase
+sudo mkdir -p /opt/letterman/pb_data
 cd /tmp
 curl -LO https://github.com/pocketbase/pocketbase/releases/download/v0.40.4/pocketbase_0.40.4_linux_amd64.zip
 unzip -o pocketbase_0.40.4_linux_amd64.zip pocketbase
-sudo mv pocketbase /opt/hourtracker/pocketbase
+sudo mv pocketbase /opt/letterman/pocketbase
 ```
 
 ### B4. Copy the app's server files up
@@ -198,9 +198,9 @@ scp -r server/pb_hooks server/pb_migrations server/pb_public server/pocketbase.s
 **On the VPS:**
 
 ```bash
-sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /tmp/pb_public /tmp/pb.sh /opt/hourtracker/
-sudo chmod +x /opt/hourtracker/pb.sh
-sudo chown -R pocketbase:pocketbase /opt/hourtracker
+sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /tmp/pb_public /tmp/pb.sh /opt/letterman/
+sudo chmod +x /opt/letterman/pb.sh
+sudo chown -R pocketbase:pocketbase /opt/letterman
 ```
 
 ### B5. Create the encryption key
@@ -208,10 +208,10 @@ sudo chown -R pocketbase:pocketbase /opt/hourtracker
 This random key is what scrambles students' names, phone numbers and signatures inside the database. (More on why, and on what it means for you, in [About the encryption key](#about-the-encryption-key) below.)
 
 ```bash
-sudo mkdir -p /etc/hourtracker
-echo "PB_FIELD_KEY=$(openssl rand -hex 16)" | sudo tee /etc/hourtracker/pocketbase.env > /dev/null
-sudo chmod 600 /etc/hourtracker/pocketbase.env
-sudo cat /etc/hourtracker/pocketbase.env
+sudo mkdir -p /etc/letterman
+echo "PB_FIELD_KEY=$(openssl rand -hex 16)" | sudo tee /etc/letterman/pocketbase.env > /dev/null
+sudo chmod 600 /etc/letterman/pocketbase.env
+sudo cat /etc/letterman/pocketbase.env
 ```
 
 **Save the printed value in your password manager right now.** If it's lost, the encrypted data can never be read again, and backups become useless. Don't put it in git or send it to anyone.
@@ -261,7 +261,7 @@ You should get `{"message":"API is healthy.",...}`. The app's privacy policy is 
 ### B8. Create your admin login
 
 ```bash
-sudo /opt/hourtracker/pb.sh superuser upsert you@example.com 'pick-a-long-unique-password'
+sudo /opt/letterman/pb.sh superuser upsert you@example.com 'pick-a-long-unique-password'
 history -c
 ```
 
@@ -275,7 +275,7 @@ New accounts must click a link in an email before they can use the app, so the s
 
 1. Sign up for a free email-sending service. **[Brevo](https://www.brevo.com)** or **[Resend](https://resend.com)** are both easy. In it, add your domain `tiredghost.com` and add the DNS records it gives you (same place as B1). Then find its **SMTP** settings: host, port, username, password. Save the password in your password manager.
 2. In the dashboard, go to **Settings → Application** and set **Application URL** to `https://hours.tiredghost.com`. Save. (The links inside emails use this; if it's wrong, verification links won't work.)
-3. **Settings → Mail settings:** set sender name `Hour Tracker` and sender address `no-reply@tiredghost.com`. Turn on **Use SMTP mail server**, fill in the SMTP details, and save.
+3. **Settings → Mail settings:** set sender name `Letterman` and sender address `no-reply@tiredghost.com`. Turn on **Use SMTP mail server**, fill in the SMTP details, and save.
 4. Click **Send test email** and send one to yourself. Check spam if it doesn't arrive.
 
 ### B10. Backups to your Mac (recommended)
@@ -286,8 +286,8 @@ The server already backs itself up every night and keeps 7 days, but those copie
 
 ```bash
 brew install age
-mkdir -p ~/hourtracker-backups
-age-keygen -o ~/hourtracker-backups/backup-key.txt
+mkdir -p ~/letterman-backups
+age-keygen -o ~/letterman-backups/backup-key.txt
 ```
 
 It prints a `Public key: age1...` line. Copy that public key. Also save the whole `backup-key.txt` file in your password manager; it's needed to open backups.
@@ -295,14 +295,14 @@ It prints a `Public key: age1...` line. Copy that public key. Also save the whol
 **On the VPS** (replace `age1REPLACE_ME` with your public key):
 
 ```bash
-sudo mkdir -p /opt/hourtracker/offsite
-echo '30 3 * * * root f=$(ls -t /opt/hourtracker/pb_data/backups/*.zip 2>/dev/null | head -1) && [ -n "$f" ] && age -r age1REPLACE_ME -o /opt/hourtracker/offsite/latest.zip.age "$f" && chmod 644 /opt/hourtracker/offsite/latest.zip.age' | sudo tee /etc/cron.d/hourtracker-backup
+sudo mkdir -p /opt/letterman/offsite
+echo '30 3 * * * root f=$(ls -t /opt/letterman/pb_data/backups/*.zip 2>/dev/null | head -1) && [ -n "$f" ] && age -r age1REPLACE_ME -o /opt/letterman/offsite/latest.zip.age "$f" && chmod 644 /opt/letterman/offsite/latest.zip.age' | sudo tee /etc/cron.d/letterman-backup
 ```
 
 From the next night on, grab a copy whenever you like (**on your Mac**; weekly is a good habit):
 
 ```bash
-scp you@VPS_IP:/opt/hourtracker/offsite/latest.zip.age ~/hourtracker-backups/backup-$(date +%F).zip.age
+scp you@VPS_IP:/opt/letterman/offsite/latest.zip.age ~/letterman-backups/backup-$(date +%F).zip.age
 ```
 
 How to restore one is in [docs/MAINTENANCE.md](docs/MAINTENANCE.md#restoring-a-backup).
@@ -314,8 +314,8 @@ How to restore one is in [docs/MAINTENANCE.md](docs/MAINTENANCE.md#restoring-a-b
 The app on a real phone always talks to `https://hours.tiredghost.com`, so finish Part B first.
 
 1. **Xcode → Settings → Accounts → +** → Apple ID → sign in.
-2. Open `HourTracker.xcodeproj`. In the left sidebar click the blue **HourTracker** project, then the **HourTracker** target → **Signing & Capabilities** tab → set **Team** to *Your Name (Personal Team)*.
-   - If it says the bundle identifier isn't available, change **Bundle Identifier** to something unique like `com.tiredghost.hourtracker.liam`.
+2. Open `Letterman.xcodeproj`. In the left sidebar click the blue **Letterman** project, then the **Letterman** target → **Signing & Capabilities** tab → set **Team** to *Your Name (Personal Team)*.
+   - If it says the bundle identifier isn't available, change **Bundle Identifier** to something unique like `com.tiredghost.letterman.liam`.
 3. Plug in your iPhone, unlock it, and tap **Trust This Computer** if asked.
 4. On the iPhone: **Settings → Privacy & Security → Developer Mode** → on. The phone restarts; confirm when asked.
 5. In Xcode, pick your iPhone in the device menu at the top and press **▶**.
@@ -361,12 +361,12 @@ TestFlight is Apple's beta-testing app. Your friends install it from the App Sto
 
 1. In Xcode → **Settings → Accounts**, click the account and note the **Team ID** (10 letters/numbers, like `ABCDE12345`).
 2. In `project.yml`, find the commented line `# DEVELOPMENT_TEAM: ABCDE12345`, remove the `# `, and put your Team ID in.
-3. Decide the bundle ID. It's `com.tiredghost.hourtracker` (`PRODUCT_BUNDLE_IDENTIFIER` in `project.yml`). If you changed it in Part C, put the same value in `project.yml`. **It can never change once the app is in App Store Connect.**
+3. Decide the bundle ID. It's `com.tiredghost.letterman` (`PRODUCT_BUNDLE_IDENTIFIER` in `project.yml`). If you changed it in Part C, put the same value in `project.yml`. **It can never change once the app is in App Store Connect.**
 4. If you've picked a real app name, set `CFBundleDisplayName` in `project.yml` now (see [docs/MAINTENANCE.md](docs/MAINTENANCE.md#changing-the-app)).
 5. Regenerate the project and commit:
 
    ```bash
-   cd ~/Desktop/hour-tracker
+   cd ~/Desktop/letterman
    xcodegen
    git add -A && git commit -m "Set signing team for TestFlight"
    ```
@@ -388,8 +388,8 @@ Apple needs a public privacy policy before outside testers can join.
    **On the VPS:**
 
    ```bash
-   sudo cp -r /tmp/pb_public /opt/hourtracker/
-   sudo chown -R pocketbase:pocketbase /opt/hourtracker
+   sudo cp -r /tmp/pb_public /opt/letterman/
+   sudo chown -R pocketbase:pocketbase /opt/letterman
    ```
 
 4. Open https://hours.tiredghost.com/privacy.html and check your email shows.
@@ -409,10 +409,10 @@ Keep this account working for as long as you use TestFlight. Apple may re-check 
 1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → **Apps** → **+** → **New App**.
 2. Fill in:
    - **Platforms:** iOS
-   - **Name:** the name people will see. It must be unique across the whole App Store, so if "Hour Tracker" is taken, try one of the ideas in the README. (You can change it later.)
+   - **Name:** the name people will see. It must be unique across the whole App Store. If "Letterman" is taken, add a few words like `Letterman: Volunteer Hours` (the name on the home screen stays "Letterman"). You can change it later.
    - **Primary language:** English (U.S.)
-   - **Bundle ID:** pick `com.tiredghost.hourtracker` (or yours from E2). If it's not in the list, do step E2.6 first and wait a few minutes.
-   - **SKU:** anything only you see, e.g. `hourtracker-001`
+   - **Bundle ID:** pick `com.tiredghost.letterman` (or yours from E2). If it's not in the list, do step E2.6 first and wait a few minutes.
+   - **SKU:** anything only you see, e.g. `letterman-001`
    - **User Access:** Full Access
 3. Click **Create**.
 
@@ -459,7 +459,7 @@ Not needed for TestFlight, but when you're ready to publish, App Store Connect w
 - screenshots (the Simulator works: ⌘S saves one)
 - a description and keywords
 - a **support URL** (a simple page in `server/pb_public/` works)
-- the **App Privacy** questions. Answer them to match `HourTracker/PrivacyInfo.xcprivacy`: name, email, phone, other user content and other data, all linked to the user, used for app functionality, no tracking.
+- the **App Privacy** questions. Answer them to match `Letterman/PrivacyInfo.xcprivacy`: name, email, phone, other user content and other data, all linked to the user, used for app functionality, no tracking.
 - an age rating
 
 The app already has the in-app account deletion Apple requires.
@@ -493,7 +493,7 @@ Save all of these in your password manager. None of them belong in git.
 | Secret | Where it came from | If you lose it |
 |---|---|---|
 | `PB_FIELD_KEY` | Step B5 | Encrypted data and backups can never be read again |
-| Dashboard admin email + password | Step B8 | Reset it with `sudo /opt/hourtracker/pb.sh superuser upsert ...` |
+| Dashboard admin email + password | Step B8 | Reset it with `sudo /opt/letterman/pb.sh superuser upsert ...` |
 | Email service (SMTP) password | Step B9 | Make a new one in the email service |
 | `backup-key.txt` (age) | Step B10 | Your downloaded backups can't be opened |
 | VPS SSH login | Your VPS provider | Use your provider's recovery console |
