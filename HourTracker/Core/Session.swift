@@ -49,7 +49,8 @@ final class Session {
         body["email"] = email.trimmed
         body["password"] = password
         body["passwordConfirm"] = password
-        let _: User = try await pb.send("POST", "/api/collections/users/records", body: body)
+        // The reply is ignored: before sign-in the server hides fields like email from it.
+        let _: Empty = try await pb.send("POST", "/api/collections/users/records", body: body)
         try await signIn(email: email, password: password)
         // The verify screen has a "Resend" button if this email doesn't go out.
         try? await resendVerification()

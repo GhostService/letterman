@@ -45,8 +45,10 @@ struct ListingsView: View {
     private var past: [Opportunity] { store.listings.filter { $0.endsAt < Date() } }
 
     private var subtitle: String {
+        if upcoming.isEmpty { return "Post opportunities and see who signs up." }
         let needed = upcoming.reduce(0) { $0 + $1.spotsLeft }
-        return needed == 0 ? "All upcoming spots are filled." : "\(needed) more volunteers needed across your upcoming listings"
+        if needed == 0 { return "All upcoming spots are filled." }
+        return "\(needed) more \(needed == 1 ? "volunteer" : "volunteers") needed across your upcoming listings"
     }
 
     private func load() async {
