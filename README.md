@@ -29,18 +29,19 @@ An iPhone app for high-school students to log volunteer hours, get each entry si
 
 ## Getting started
 
+**New here? Start with [FIRST_SETUP.md](FIRST_SETUP.md).** It goes from nothing to the app on your iPhone, step by step.
+
 | I want to… | Read |
 |---|---|
-| Try the app in the Simulator | [docs/IOS_SETUP.md](docs/IOS_SETUP.md) |
-| Put the server online on my VPS | [docs/SERVER_SETUP.md](docs/SERVER_SETUP.md) |
-| Install it on my iPhone | [docs/IOS_SETUP.md#install-on-your-iphone-15-free-no-paid-developer-account](docs/IOS_SETUP.md#install-on-your-iphone-15-free-no-paid-developer-account) |
-| Approve an organization account | [docs/SERVER_SETUP.md#10-approving-organization-operator-accounts](docs/SERVER_SETUP.md#10-approving-organization-operator-accounts) |
+| Set everything up the first time | [FIRST_SETUP.md](FIRST_SETUP.md) |
+| Approve an organization, back up, update, fix a problem | [docs/MAINTENANCE.md](docs/MAINTENANCE.md) |
+| Know what data is stored and who sees it | [docs/PRIVACY.md](docs/PRIVACY.md) |
 | Understand how it works | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 
-Quick local run:
+Quick local run (after downloading PocketBase, see [FIRST_SETUP.md](FIRST_SETUP.md#a1-download-pocketbase-for-your-mac)):
 
 ```bash
-cd server && ./dev.sh                  # terminal 1 (download PocketBase first, see IOS_SETUP.md)
+cd server && ./dev.sh                  # terminal 1
 cd server && python3 dev_seed.py       # terminal 2, demo data
 open HourTracker.xcodeproj             # then press Run
 ```
@@ -57,7 +58,8 @@ server/
   smoke_test.py       automated security checks
   dev.sh, dev_seed.py local test server + demo data
   pocketbase.service, Caddyfile, pb.sh   VPS deployment files
-docs/                 setup guides, privacy, architecture, designs, screenshots
+FIRST_SETUP.md        start here
+docs/                 maintenance, privacy, architecture, designs, screenshots
 ```
 
 ## Name ideas

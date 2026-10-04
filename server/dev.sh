@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# A local-only encryption key, made once. The real server has its own (see docs/SERVER_SETUP.md).
+# A local-only encryption key, made once. The real server has its own (see FIRST_SETUP.md).
 if [ ! -f .dev-key ]; then
   openssl rand -base64 24 | tr -d '\n' > .dev-key
 fi

@@ -4,7 +4,7 @@
 #
 #   sudo /opt/hourtracker/pb.sh superuser upsert you@example.com 'a-long-password'
 #
-# (See docs/SERVER_SETUP.md.)
+# (See FIRST_SETUP.md, step B8.)
 set -euo pipefail
 
 set -a
