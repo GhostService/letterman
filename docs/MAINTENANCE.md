@@ -25,9 +25,19 @@ Only approve people you trust: operators see the contact details of students who
 | Wants their data deleted | They can tap **Profile → Delete my account**. Or delete their user record in the dashboard; everything of theirs is deleted with it. |
 | A log has a mistake but is already signed | Signed logs are locked on purpose. The student can delete it and log it again with a new signature. |
 
-## Renewing the app on your iPhone (every 7 days)
+## Shipping a new TestFlight build
 
-With a free Apple ID the app stops opening after 7 days. Plug in the phone, open `HourTracker.xcodeproj`, pick your iPhone, and press ▶. Your data is on the server, so nothing is lost.
+Do this when you've changed the app, and at least every 90 days (TestFlight builds expire after 90 days).
+
+1. Test it in the Simulator against the local server (FIRST_SETUP.md, Part A).
+2. In `project.yml`, increase `CURRENT_PROJECT_VERSION` by one. For a bigger release, also raise `MARKETING_VERSION` (e.g. `1.0` → `1.1`). Then run `xcodegen` and commit.
+3. If the server changed too, update it first (see [Updating the server](#updating-the-server)), so the new app never talks to old server rules.
+4. Xcode: device menu **Any iOS Device (arm64)** → **Product → Archive** → **Distribute App** → **App Store Connect**.
+5. When processing finishes, App Store Connect → **TestFlight** → add the build to the "Friends" group. Fill in **What to Test** so testers know what changed.
+
+## Renewing the app installed straight from Xcode
+
+Apps installed with ▶ from Xcode (not TestFlight) stop opening after **7 days** with a free Apple ID, or about **a year** with the paid program. Plug in the phone, open `HourTracker.xcodeproj`, pick your iPhone, and press ▶. Your data is on the server, so nothing is lost.
 
 ## Backups
 
@@ -58,17 +68,17 @@ Delete `restore.zip` afterwards; it isn't encrypted.
 
 ## Updating the server
 
-When files in `server/pb_hooks` or `server/pb_migrations` change, **on your Mac**:
+When files in `server/pb_hooks`, `server/pb_migrations` or `server/pb_public` change, **on your Mac**:
 
 ```bash
 cd server && python3 smoke_test.py && cd ..
-scp -r server/pb_hooks server/pb_migrations you@VPS_IP:/tmp/
+scp -r server/pb_hooks server/pb_migrations server/pb_public you@VPS_IP:/tmp/
 ```
 
 **On the VPS:**
 
 ```bash
-sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /opt/hourtracker/
+sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /tmp/pb_public /opt/hourtracker/
 sudo chown -R pocketbase:pocketbase /opt/hourtracker
 sudo systemctl restart pocketbase
 ```
@@ -107,5 +117,6 @@ New migrations run automatically when it restarts.
 | `PB_FIELD_KEY must be set to exactly 32 characters` in the logs | `/etc/hourtracker/pocketbase.env` is missing, or the key isn't 32 characters. |
 | HTTPS / certificate errors | `dig +short hours.tiredghost.com` must show the VPS IP; `sudo journalctl -u caddy -n 50`. Ports 80 and 443 must be open (`sudo ufw status`). |
 | No verification emails | Dashboard → Settings → Mail settings → **Send test email**. Check the Application URL and spam. |
-| App won't open on the iPhone | 7-day limit. Press ▶ in Xcode again. |
+| App won't open on the iPhone | Installed from Xcode: press ▶ again (7-day / 1-year limit). From TestFlight: the build expired after 90 days, so upload a new one. |
+| TestFlight upload rejected | Read the error code in the email. Most common: the build number wasn't increased (`CURRENT_PROJECT_VERSION`). |
 | Something else | `sudo journalctl -u pocketbase -f` on the VPS, and **Dashboard → Logs**. |

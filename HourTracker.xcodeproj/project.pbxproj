@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05CFAFDB0059F990F3ECC703 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2EFDBEDDEF26A6DA0623F1D1 /* PrivacyInfo.xcprivacy */; };
 		0A329F82F621300D5AE35D43 /* Figtree-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5DA7190F813E693F45C6755B /* Figtree-Bold.ttf */; };
 		19DEB8DCB750704AB9771653 /* libxlsxwriter in Frameworks */ = {isa = PBXBuildFile; productRef = C7507D31F08413F6CA474DEF /* libxlsxwriter */; };
 		1E61EF7B03ECDC294690B3F9 /* Export.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421EB79A49B93FA462FFFF8 /* Export.swift */; };
@@ -45,6 +46,7 @@
 		1DC40AF19D04B6F3321F8CB1 /* HourTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourTrackerApp.swift; sourceTree = "<group>"; };
 		1F686E4033877EF73B6C1B0E /* OFL-BigShouldersDisplay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OFL-BigShouldersDisplay.txt"; sourceTree = "<group>"; };
 		26818911F029BCB25BF8170D /* LogDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDetailView.swift; sourceTree = "<group>"; };
+		2EFDBEDDEF26A6DA0623F1D1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		49C5CCFBC9ED77932151F792 /* HoursView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoursView.swift; sourceTree = "<group>"; };
 		49E16010A456EA3E8B84D65F /* AgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgendaView.swift; sourceTree = "<group>"; };
 		5DA7190F813E693F45C6755B /* Figtree-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Figtree-Bold.ttf"; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			children = (
 				C8C49B237CE5054AF88CCF54 /* Assets.xcassets */,
 				1DC40AF19D04B6F3321F8CB1 /* HourTrackerApp.swift */,
+				2EFDBEDDEF26A6DA0623F1D1 /* PrivacyInfo.xcprivacy */,
 				D564F3703F33C3E35A0B2BBA /* Core */,
 				4AEC84F681A4EA9B32A2780E /* Fonts */,
 				74AE9455B38DB7A8265044A9 /* UI */,
@@ -236,6 +239,7 @@
 				D23914F4B29C30B2B8B6BAB8 /* Figtree-SemiBold.ttf in Resources */,
 				4E8C5FFB35BC0E608C68E56C /* OFL-BigShouldersDisplay.txt in Resources */,
 				F318D5293967A9DBFA503491 /* OFL-Figtree.txt in Resources */,
+				05CFAFDB0059F990F3ECC703 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

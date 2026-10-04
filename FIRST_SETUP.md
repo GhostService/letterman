@@ -1,6 +1,6 @@
-# First setup: from zero to the app on your iPhone
+# First setup: from zero to TestFlight
 
-Follow this top to bottom the first time. There are four parts:
+Follow this top to bottom the first time. There are five parts:
 
 | Part | What you get | Time |
 |---|---|---|
@@ -8,8 +8,9 @@ Follow this top to bottom the first time. There are four parts:
 | [B. Put the server online](#part-b-put-the-server-online-your-vps) | The real backend at `https://hours.tiredghost.com` | 45–60 min |
 | [C. Install on your iPhone](#part-c-install-on-your-iphone-15) | The app on your phone, talking to your server | 10 min |
 | [D. First real test](#part-d-first-real-test) | Real accounts, a real listing, a real signed log | 15 min |
+| [E. TestFlight for friends](#part-e-testflight-invites-for-your-friends) | The $99 Apple Developer account, and friends installing the app through TestFlight | 1–2 hours of work, plus up to a few days waiting on Apple |
 
-Parts A and B don't depend on each other, so you can do them in either order. Part C needs Part B.
+Parts A and B don't depend on each other, so you can do them in either order. Part C needs Part B, and Part E needs Parts B–D.
 
 After that, [docs/MAINTENANCE.md](docs/MAINTENANCE.md) covers day-to-day tasks: approving organizations, backups, updating, and fixing problems.
 
@@ -191,13 +192,13 @@ sudo mv pocketbase /opt/hourtracker/pocketbase
 **On your Mac:**
 
 ```bash
-scp -r server/pb_hooks server/pb_migrations server/pocketbase.service server/Caddyfile server/pb.sh you@VPS_IP:/tmp/
+scp -r server/pb_hooks server/pb_migrations server/pb_public server/pocketbase.service server/Caddyfile server/pb.sh you@VPS_IP:/tmp/
 ```
 
 **On the VPS:**
 
 ```bash
-sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /tmp/pb.sh /opt/hourtracker/
+sudo cp -r /tmp/pb_hooks /tmp/pb_migrations /tmp/pb_public /tmp/pb.sh /opt/hourtracker/
 sudo chmod +x /opt/hourtracker/pb.sh
 sudo chown -R pocketbase:pocketbase /opt/hourtracker
 ```
@@ -255,7 +256,7 @@ Check it **on your Mac**:
 curl https://hours.tiredghost.com/api/health
 ```
 
-You should get `{"message":"API is healthy.",...}`. If you get a certificate error, wait a minute and retry; `sudo journalctl -u caddy -n 50` on the VPS shows what's happening (usually DNS from B1 not ready yet).
+You should get `{"message":"API is healthy.",...}`. The app's privacy policy is now live at https://hours.tiredghost.com/privacy.html too (you'll fill in your contact email in Part E). If you get a certificate error, wait a minute and retry; `sudo journalctl -u caddy -n 50` on the VPS shows what's happening (usually DNS from B1 not ready yet).
 
 ### B8. Create your admin login
 
@@ -343,6 +344,128 @@ That's everything working for real.
 
 ---
 
+## Part E: TestFlight invites for your friends
+
+TestFlight is Apple's beta-testing app. Your friends install it from the App Store, accept your invite, and get your app. Each build works for 90 days, and there's no 7-day limit. You need the paid Apple Developer Program for this.
+
+### E1. Join the Apple Developer Program ($99/year)
+
+**Apple requires the person who enrolls to be 18 or older.** If you're under 18, a parent or guardian enrolls with **their own** Apple ID, and their legal name is shown as the app's developer in TestFlight and the App Store. That's normal for student developers. Do it together, since they'll be agreeing to Apple's contracts.
+
+1. On [developer.apple.com/programs/enroll](https://developer.apple.com/programs/enroll/), sign in with the Apple ID that will own the account (with two-factor authentication turned on).
+2. Choose to enroll as an **Individual** (an Organization needs a registered business and a D-U-N-S number, so skip that).
+3. Pay the $99. Approval usually takes from a few hours to two days, and you'll get an email.
+4. In Xcode → **Settings → Accounts**, add the Apple ID that enrolled. If a parent enrolled, they sign in on your Mac (and approve the two-factor code on their phone). Afterwards you'll see a team like *Their Name (Individual)*.
+
+### E2. Point the project at your team
+
+1. In Xcode → **Settings → Accounts**, click the account and note the **Team ID** (10 letters/numbers, like `ABCDE12345`).
+2. In `project.yml`, find the commented line `# DEVELOPMENT_TEAM: ABCDE12345`, remove the `# `, and put your Team ID in.
+3. Decide the bundle ID. It's `com.tiredghost.hourtracker` (`PRODUCT_BUNDLE_IDENTIFIER` in `project.yml`). If you changed it in Part C, put the same value in `project.yml`. **It can never change once the app is in App Store Connect.**
+4. If you've picked a real app name, set `CFBundleDisplayName` in `project.yml` now (see [docs/MAINTENANCE.md](docs/MAINTENANCE.md#changing-the-app)).
+5. Regenerate the project and commit:
+
+   ```bash
+   cd ~/Desktop/hour-tracker
+   xcodegen
+   git add -A && git commit -m "Set signing team for TestFlight"
+   ```
+
+6. Open the project, plug in your iPhone, and press ▶ once. Xcode registers the bundle ID with Apple. (Paid accounts also last a year on your own phone instead of 7 days.)
+
+### E3. Finish the privacy policy page
+
+Apple needs a public privacy policy before outside testers can join.
+
+1. Open `server/pb_public/privacy.html` and replace both `REPLACE-WITH-YOUR-EMAIL` with an email you'll actually read for privacy requests.
+2. Read the whole page once. It should match what the app does (it does today, but keep it true if you add features).
+3. Upload it (**on your Mac**):
+
+   ```bash
+   scp -r server/pb_public you@VPS_IP:/tmp/
+   ```
+
+   **On the VPS:**
+
+   ```bash
+   sudo cp -r /tmp/pb_public /opt/hourtracker/
+   sudo chown -R pocketbase:pocketbase /opt/hourtracker
+   ```
+
+4. Open https://hours.tiredghost.com/privacy.html and check your email shows.
+
+### E4. Make a demo account for Apple's reviewer
+
+Before outside testers can join, someone at Apple tries the app ("Beta App Review"). They need a login that works right away, without waiting for a verification email.
+
+1. In the app on your phone, create an account like `appreview@tiredghost.com` (any address on your domain or your own `+` address) with a strong password. Give it a name like "App Review", and turn **off** the organization switch.
+2. In the dashboard → **Collections → users**, open that account, turn on **verified**, and save.
+3. Sign in as it once and log a short example entry with a signature, so the reviewer sees what the app does. Make sure at least one upcoming opportunity exists, posted from your organization test account from Part D.
+
+Keep this account working for as long as you use TestFlight. Apple may re-check later builds.
+
+### E5. Create the app in App Store Connect
+
+1. Go to [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → **Apps** → **+** → **New App**.
+2. Fill in:
+   - **Platforms:** iOS
+   - **Name:** the name people will see. It must be unique across the whole App Store, so if "Hour Tracker" is taken, try one of the ideas in the README. (You can change it later.)
+   - **Primary language:** English (U.S.)
+   - **Bundle ID:** pick `com.tiredghost.hourtracker` (or yours from E2). If it's not in the list, do step E2.6 first and wait a few minutes.
+   - **SKU:** anything only you see, e.g. `hourtracker-001`
+   - **User Access:** Full Access
+3. Click **Create**.
+
+### E6. Upload a build
+
+Every upload needs a **higher build number** than the last one. The first upload can use the `1` that's already set. For every later upload, increase `CURRENT_PROJECT_VERSION` in `project.yml` (2, 3, 4…) and run `xcodegen` first.
+
+1. Make sure the server is up: `curl https://hours.tiredghost.com/api/health`. TestFlight builds always use the real server.
+2. In Xcode, set the device menu at the top to **Any iOS Device (arm64)**.
+3. **Product → Archive.** When it finishes, the **Organizer** window opens.
+4. Select the new archive → **Distribute App** → **App Store Connect** → **Distribute**. Leave the default options on (automatic signing, upload symbols).
+5. Wait for the email saying the build finished processing (usually 5–30 minutes). It then appears under the app's **TestFlight** tab.
+
+If the upload is rejected with an error code, search Apple's message. The project already includes the privacy manifest and encryption setting that cause most first-upload rejections.
+
+### E7. Try it yourself first (internal testing, no review)
+
+1. App Store Connect → your app → **TestFlight** → **Internal Testing** → **+** to create a group (e.g. "Me"). Add yourself, or the account holder if a parent enrolled. Internal testers must be users on the developer account, so this is just for you, not friends.
+2. Add the build to the group. Install **TestFlight** from the App Store on your iPhone, open the invite, and install. Do the Part D tests again on this build.
+
+### E8. Invite your friends (external testing)
+
+1. **TestFlight → Test Information** (left sidebar), fill in:
+   - **Beta App Description:** e.g. "Log volunteer hours, get them signed by your supervisor on your phone, and sign up for local volunteer opportunities."
+   - **Feedback Email:** your email.
+   - **Privacy Policy URL:** `https://hours.tiredghost.com/privacy.html`
+   - **Beta App Review Information:** your name, email and phone; check **Sign-in required** and enter the demo account from E4.
+   - **Review notes:** something like: "Students log volunteer hours and a supervisor signs on the screen. To test: tap +, enter a place, tap Get supervisor signature, type any name and draw any signature. Opportunities tab: sign up for a listing. Organization accounts are approved manually by the admin, so the demo account is a student account."
+2. **External Testing → +** → create a group called "Friends".
+3. Add your build to the group and click **Submit for Review**. The first review usually takes about a day. Later builds are often approved faster or automatically.
+4. When it's approved, add testers in either of two ways:
+   - **By email:** **Testers → +**, then enter each friend's email (the one on their Apple ID). They get an email invite.
+   - **Public link:** turn on the group's **Public Link** and send it to friends. Anyone with the link can join, so set a tester limit (e.g. 30) and turn it off when you're done.
+5. Your friends install **TestFlight** from the App Store, open your invite or link, tap **Accept**, then **Install**. They create their own account in your app. Organization accounts still need your approval in the dashboard (see [docs/MAINTENANCE.md](docs/MAINTENANCE.md#approving-organization-operator-accounts)).
+
+Each build stops working **90 days** after upload. Before then, upload a new one (E6 with a higher build number), add it to the "Friends" group, and testers get it automatically.
+
+**Before inviting people:** re-read [About the encryption key](#about-the-encryption-key) below, since you'll be holding other students' information. It's a good moment to let a parent or teacher know what you're doing.
+
+### E9. Later: the real App Store
+
+Not needed for TestFlight, but when you're ready to publish, App Store Connect will also ask for:
+
+- screenshots (the Simulator works: ⌘S saves one)
+- a description and keywords
+- a **support URL** (a simple page in `server/pb_public/` works)
+- the **App Privacy** questions. Answer them to match `HourTracker/PrivacyInfo.xcprivacy`: name, email, phone, other user content and other data, all linked to the user, used for app functionality, no tracking.
+- an age rating
+
+The app already has the in-app account deletion Apple requires.
+
+---
+
 ## About the encryption key
 
 **What it is:** `PB_FIELD_KEY` is a random 32-character password that only the server uses. Before the server saves a student's name, phone, school, grade, hour logs or signature, it scrambles them with this key (AES-256 encryption). It unscrambles them only when sending them to someone the rules allow: the student, or an organization they signed up with.
@@ -374,9 +497,11 @@ Save all of these in your password manager. None of them belong in git.
 | Email service (SMTP) password | Step B9 | Make a new one in the email service |
 | `backup-key.txt` (age) | Step B10 | Your downloaded backups can't be opened |
 | VPS SSH login | Your VPS provider | Use your provider's recovery console |
+| Apple Developer account (Apple ID) | Step E1 | Apple's account recovery. If a parent enrolled, it's their Apple ID. |
+| Beta review demo account password | Step E4 | Reset it in the dashboard, then update it in App Store Connect |
 
 ## Where to go next
 
-- **Day-to-day tasks** (approving organizations, backups, updating, renewing the iPhone app every 7 days, troubleshooting): [docs/MAINTENANCE.md](docs/MAINTENANCE.md)
+- **Day-to-day tasks** (approving organizations, backups, updating, shipping new TestFlight builds, troubleshooting): [docs/MAINTENANCE.md](docs/MAINTENANCE.md)
 - **How it works:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - **What data is stored and who sees it:** [docs/PRIVACY.md](docs/PRIVACY.md)

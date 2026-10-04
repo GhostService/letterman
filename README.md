@@ -29,11 +29,12 @@ An iPhone app for high-school students to log volunteer hours, get each entry si
 
 ## Getting started
 
-**New here? Start with [FIRST_SETUP.md](FIRST_SETUP.md).** It goes from nothing to the app on your iPhone, step by step.
+**New here? Start with [FIRST_SETUP.md](FIRST_SETUP.md).** It goes step by step from nothing to the server on your VPS, the app on your iPhone, and friends testing through TestFlight.
 
 | I want to… | Read |
 |---|---|
 | Set everything up the first time | [FIRST_SETUP.md](FIRST_SETUP.md) |
+| Send TestFlight invites to friends | [FIRST_SETUP.md, Part E](FIRST_SETUP.md#part-e-testflight-invites-for-your-friends) |
 | Approve an organization, back up, update, fix a problem | [docs/MAINTENANCE.md](docs/MAINTENANCE.md) |
 | Know what data is stored and who sees it | [docs/PRIVACY.md](docs/PRIVACY.md) |
 | Understand how it works | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
@@ -55,6 +56,7 @@ project.yml           app name, bundle id, iOS version, permissions
 server/
   pb_migrations/      database tables + security rules
   pb_hooks/           encryption, sign-up limits, signature checks
+  pb_public/          public web pages (privacy policy)
   smoke_test.py       automated security checks
   dev.sh, dev_seed.py local test server + demo data
   pocketbase.service, Caddyfile, pb.sh   VPS deployment files

@@ -71,6 +71,7 @@ HourTracker/
     CalendarSync.swift    "Volunteering" calendar in the iPhone Calendar app
     Export.swift          .xlsx export with embedded signature images
     Keychain.swift
+  PrivacyInfo.xcprivacy   Apple privacy manifest (required for TestFlight / App Store uploads)
   UI/                     one file per screen group; Theme.swift has colors, fonts and shared pieces
   Fonts/                  Big Shoulders Display + Figtree (SIL Open Font License)
 ```
