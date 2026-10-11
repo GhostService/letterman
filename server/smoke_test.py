@@ -167,6 +167,10 @@ def run(admin_email, admin_pw, data_dir):
     check("operator cannot edit another's listing", s == 404, s)
     s, _ = call("PATCH", f"/api/collections/opportunities/records/{opp}", to1, {"operator": o2})
     check("operator cannot give listing away", 400 <= s < 500, s)
+    s, r = call("PATCH", f"/api/collections/opportunities/records/{opp}", to1, {"lat": 39.7817, "lng": -89.6501})
+    check("listing stores map coordinates", s == 200 and r.get("lat") == 39.7817 and r.get("lng") == -89.6501, r)
+    s, _ = call("PATCH", f"/api/collections/opportunities/records/{opp}", to1, {"lat": 91})
+    check("impossible latitude rejected", 400 <= s < 500, s)
 
     # --- signups ---
     s, r = call("POST", "/api/collections/signups/records", tv1, {"opportunity": opp, "volunteer": v1})

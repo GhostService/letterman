@@ -53,16 +53,20 @@ def main():
         local = (datetime.now().astimezone() + timedelta(days=days)).replace(hour=hour, minute=0, second=0, microsecond=0)
         return iso(local.astimezone(timezone.utc))
 
+    # Listings sit about 2, 8, 20 and 40 miles north of downtown Springfield, IL, so setting the area
+    # to "Springfield, IL" shows 1, 2, 3 and 4 of them at 5, 10, 25 and 50 miles.
+    base_lat, base_lng, miles_per_degree = 39.7817, -89.6501, 69.05
     opps = {}
-    for title, org, addr, days, hour, dur, spots, desc in [
-        ("Saturday pantry shift", "Riverside Food Bank", "88 Mill St", 6, 9, 3, 8, "Sort donations and pack grocery boxes for families."),
-        ("Mill Creek trail cleanup", "Riverside Food Bank", "Trailhead lot B, Mill Creek Park", 7, 8, 4, 6, "Pick up litter along the creek trail. Gloves and bags provided."),
-        ("Reading buddies", "Riverside Food Bank", "200 Oak Hill Ave", 9, 15, 1.5, 6, "Read with kids in grades 1 to 3 at the library."),
-        ("Holiday food drive setup", "Riverside Food Bank", "88 Mill St", 20, 10, 2, 12, "Set up collection bins and signs before the drive starts."),
+    for title, org, addr, miles, days, hour, dur, spots, desc in [
+        ("Saturday pantry shift", "Riverside Food Bank", "88 Mill St", 2, 6, 9, 3, 8, "Sort donations and pack grocery boxes for families."),
+        ("Mill Creek trail cleanup", "Riverside Food Bank", "Trailhead lot B, Mill Creek Park", 8, 7, 8, 4, 6, "Pick up litter along the creek trail. Gloves and bags provided."),
+        ("Reading buddies", "Riverside Food Bank", "200 Oak Hill Ave", 20, 9, 15, 1.5, 6, "Read with kids in grades 1 to 3 at the library."),
+        ("Holiday food drive setup", "Riverside Food Bank", "Northfield Community Hall", 40, 20, 10, 2, 12, "Set up collection bins and signs before the drive starts."),
     ]:
         _, r = call("POST", "/api/collections/opportunities/records", op_t,
                     {"operator": op, "title": title, "org_name": org, "address": addr, "starts_at": at(days, hour),
-                     "duration_hours": dur, "spots_needed": spots, "description": desc})
+                     "duration_hours": dur, "spots_needed": spots, "description": desc,
+                     "lat": base_lat + miles / miles_per_degree, "lng": base_lng})
         opps[title] = r["id"]
 
     for uid, tok in [(vol, vol_t), *others]:

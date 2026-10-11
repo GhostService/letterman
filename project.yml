@@ -66,6 +66,7 @@ targets:
         # paperwork. Without this, App Store Connect asks about it on every upload.
         ITSAppUsesNonExemptEncryption: false
         NSCalendarsFullAccessUsageDescription: Letterman adds your volunteer shifts to a "Volunteering" calendar so they show up in the Calendar app.
+        NSLocationWhenInUseUsageDescription: Letterman uses your location once to show volunteer opportunities near you. It stays on your phone.
         NSAppTransportSecurity:
           # Lets Simulator debug builds reach PocketBase on this Mac. Real servers must use HTTPS.
           NSAllowsLocalNetworking: true

@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import UIKit
 
@@ -55,12 +56,20 @@ struct Opportunity: Decodable, Identifiable, Equatable, Hashable {
     var spotsNeeded: Int
     /// Added by the server on every read: how many volunteers have signed up.
     var spotsFilled: Int
+    /// Map position of `address`, picked from Apple Maps suggestions when the listing is saved.
+    var lat: Double?
+    var lng: Double?
 
     var spotsLeft: Int { max(spotsNeeded - spotsFilled, 0) }
     var endsAt: Date { startsAt.addingTimeInterval(durationHours * 3600) }
+    /// Nil for listings saved before locations existed. PocketBase sends 0 for an empty number field.
+    var location: CLLocation? {
+        guard let lat, let lng, lat != 0 || lng != 0 else { return nil }
+        return CLLocation(latitude: lat, longitude: lng)
+    }
 
     enum CodingKeys: String, CodingKey {
-        case id, `operator`, title, orgName, address, startsAt, durationHours, spotsNeeded, spotsFilled
+        case id, `operator`, title, orgName, address, startsAt, durationHours, spotsNeeded, spotsFilled, lat, lng
         case details = "description"
     }
 }

@@ -86,6 +86,7 @@ final class Session {
         Keychain.delete(Self.userKey)
         Outbox.clear()
         CalendarSync.disable()
+        AreaKey.all.forEach(UserDefaults.standard.removeObject(forKey:))
     }
 
     private func store(_ auth: AuthResponse) {

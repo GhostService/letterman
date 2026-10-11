@@ -31,7 +31,8 @@ All in `server/pb_migrations/1759600000_init.js`. 🔒 = encrypted at rest.
 - **Locked once signed:** the update rule requires `signature = ""`, so a signed log can't be changed by anyone but the admin.
 - A hook requires a supervisor name with every signature, checks it's a PNG, and sets `signed_at` itself (no backdating).
 
-**opportunities**: operator, title, org_name, description, address, starts_at, duration_hours, spots_needed
+**opportunities**: operator, title, org_name, description, address, starts_at, duration_hours, spots_needed, lat, lng
+- `lat`/`lng` come from the Apple Maps suggestion the operator picks for the address. Not encrypted (the address is public to verified users).
 - Every verified user can browse. Only approved operators can create them, and only for themselves.
 - `spots_filled` isn't stored; a hook counts sign-ups on every read, so it can never drift.
 - `spots_needed` can't be lowered below the number already signed up.
@@ -69,6 +70,7 @@ Letterman/
     OperatorStore.swift   an operator's listings and attendees
     Outbox.swift          logs waiting for a connection (file protected by iOS)
     CalendarSync.swift    "Volunteering" calendar in the iPhone Calendar app
+    Geo.swift             Apple Maps address suggestions and lookups, one-off GPS reading, distances
     Export.swift          .xlsx export with embedded signature images
     Keychain.swift
   PrivacyInfo.xcprivacy   Apple privacy manifest (required for TestFlight / App Store uploads)
@@ -77,6 +79,8 @@ Letterman/
 ```
 
 **Offline logging.** Volunteer sites often have poor signal. If saving a log fails because there's no connection, the log (including the signature PNG) goes into an outbox file on the phone and is shown as "Saved on your phone". It uploads automatically when the network comes back, when the app reopens, or on pull-to-refresh. Each new log gets its id on the phone, so a retry after a lost reply can't create a duplicate. If the server *rejects* a pending log, it stays with the reason shown until the student discards it. Nothing is silently dropped.
+
+**Near me.** Organizations must pick their listing's address from Apple Maps suggestions, which gives every listing exact coordinates. Students set an area (a typed ZIP/town, or one GPS reading) and a radius of 5, 10, 25 or 50 miles. The app already downloads every upcoming listing, so it filters by distance on the phone; the student's area is stored only in the app's local settings and never sent to the server. Listings saved before coordinates existed are always shown.
 
 **Calendar sync.** When turned on, the app owns one calendar named "Volunteering" and, on every change, replaces its upcoming events with the current sign-ups and custom entries. It never touches the user's other calendars. Turning sync off or signing out deletes that calendar.
 

@@ -14,7 +14,9 @@ Most people using this app are high-school students, many under 18. The public v
 | Your own calendar entries | Optional | Your volunteering plans |
 | Organization accounts: org name | Yes | Shown on listings |
 
-The app has no ads, no analytics, no tracking, and no location access.
+The app has no ads, no analytics and no tracking.
+
+**Location:** for the "near me" filter, a student types a ZIP code or town, or taps **Use my location** for a one-time GPS reading (iOS asks permission first). That area is saved only on the phone and never sent to the server, and it's cleared on sign-out. Place and address lookups go through Apple Maps. Listings store the map coordinates of their (already public) address.
 
 ## Who can see what
 

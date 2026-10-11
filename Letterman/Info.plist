@@ -31,6 +31,8 @@
 	</dict>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Letterman adds your volunteer shifts to a "Volunteering" calendar so they show up in the Calendar app.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Letterman uses your location once to show volunteer opportunities near you. It stays on your phone.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BigShouldersDisplay-Black.ttf</string>

@@ -1,3 +1,4 @@
+import MapKit
 import SwiftUI
 
 struct ListingsView: View {
@@ -176,6 +177,11 @@ struct ListingFormView: View {
     @State private var startsAt = Calendar.current.date(byAdding: .day, value: 7, to: Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!)!
     @State private var hours = 2.0
     @State private var spots = 5
+    // Set only by picking an Apple Maps suggestion, so the map position always matches the address.
+    @State private var lat: Double?
+    @State private var lng: Double?
+    @State private var pickedAddress: String?
+    @State private var completer = AddressCompleter()
     @State private var busy = false
     @State private var confirmingDelete = false
     @State private var error: String?
@@ -188,11 +194,27 @@ struct ListingFormView: View {
                     TextField("Organization name", text: $orgName)
                     TextField("What volunteers will do (optional)", text: $details, axis: .vertical).lineLimit(3...8)
                 }
-                Section("Where and when") {
-                    TextField("Address", text: $address).textContentType(.fullStreetAddress)
+                Section {
+                    TextField("Start typing the address", text: $address)
+                        .textContentType(.fullStreetAddress)
+                        .onChange(of: address) { _, typed in addressEdited(typed) }
+                    ForEach(lat == nil ? completer.suggestions : [], id: \.self) { suggestion in
+                        Button { pick(suggestion) } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(suggestion.title).foregroundStyle(Theme.ink)
+                                Text(suggestion.subtitle).font(.fig(13)).foregroundStyle(Theme.mute)
+                            }
+                        }
+                    }
                     DatePicker("Starts", selection: $startsAt, in: Date()...)
                     Stepper(value: $hours, in: 0.25...24, step: 0.25) {
                         HStack { Text("Hours"); Spacer(); Text(hours.hoursText).foregroundStyle(Theme.ink) }
+                    }
+                } header: {
+                    Text("Where and when")
+                } footer: {
+                    if lat == nil && !address.trimmed.isEmpty {
+                        Text("Pick an address from the suggestions so students nearby can find this.")
                     }
                 }
                 Section {
@@ -233,7 +255,31 @@ struct ListingFormView: View {
     }
 
     private var canSave: Bool {
-        !busy && !title.trimmed.isEmpty && !orgName.trimmed.isEmpty && !address.trimmed.isEmpty
+        !busy && !title.trimmed.isEmpty && !orgName.trimmed.isEmpty && lat != nil
+    }
+
+    /// Typing after picking a suggestion means the saved map position no longer matches.
+    private func addressEdited(_ typed: String) {
+        guard typed != pickedAddress else { return }
+        pickedAddress = nil
+        lat = nil
+        lng = nil
+        completer.search(typed)
+    }
+
+    private func pick(_ suggestion: MKLocalSearchCompletion) {
+        Task {
+            do {
+                let place = try await Geo.resolve(suggestion)
+                pickedAddress = place.address
+                address = place.address
+                lat = place.location.coordinate.latitude
+                lng = place.location.coordinate.longitude
+                completer.clear()
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
     }
 
     private func fill() {
@@ -242,6 +288,11 @@ struct ListingFormView: View {
             title = e.title
             orgName = e.orgName
             details = e.details
+            if let location = e.location {
+                pickedAddress = e.address
+                lat = location.coordinate.latitude
+                lng = location.coordinate.longitude
+            }
             address = e.address
             startsAt = e.startsAt
             hours = e.durationHours
@@ -258,7 +309,7 @@ struct ListingFormView: View {
             try await store.save([
                 "title": title.trimmed, "org_name": orgName.trimmed, "description": details.trimmed,
                 "address": address.trimmed, "starts_at": PBDate.string(startsAt),
-                "duration_hours": hours, "spots_needed": spots,
+                "duration_hours": hours, "spots_needed": spots, "lat": lat ?? 0, "lng": lng ?? 0,
             ], existingID: existing?.id)
             dismiss()
         } catch {
