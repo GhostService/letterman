@@ -36,14 +36,17 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         CODE_SIGN_STYLE: Automatic
-        # Your Apple team ID (Xcode > Settings > Accounts). Uncomment and fill in so `xcodegen`
-        # keeps your signing team; required for TestFlight (FIRST_SETUP.md, Part E).
-        # DEVELOPMENT_TEAM: ABCDE12345
+        # Your Apple team ID (Xcode > Settings > Accounts), so `xcodegen` keeps your signing team.
+        # This is the free Personal Team. After joining the Apple Developer Program, replace it with
+        # the paid team's ID; TestFlight needs that one (FIRST_SETUP.md, Part E).
+        DEVELOPMENT_TEAM: VPNAM5Q3CQ
     info:
       path: Letterman/Info.plist
       properties:
         # The app's name on the home screen. Change it here when you pick a real name.
         CFBundleDisplayName: Letterman
+        # The App Store category.
+        LSApplicationCategoryType: public.app-category.lifestyle
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen:
