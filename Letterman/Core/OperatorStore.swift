@@ -23,6 +23,14 @@ final class OperatorStore {
         if let i = listings.firstIndex(where: { $0.id == fresh.id }) { listings[i] = fresh }
     }
 
+    /// Marks volunteers as having come. The server signs their hours for the shift; this can't be undone.
+    func confirmAttendance(_ people: [Signup], at listing: Opportunity) async throws {
+        for person in people {
+            let updated: Signup = try await pb.update("signups", id: person.id, ["attended": true])
+            if let i = attendees[listing.id]?.firstIndex(where: { $0.id == updated.id }) { attendees[listing.id]?[i] = updated }
+        }
+    }
+
     func save(_ body: [String: Any], existingID: String?) async throws {
         var body = body
         body["operator"] = userID

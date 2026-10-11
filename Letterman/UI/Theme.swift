@@ -170,6 +170,8 @@ extension View {
 /// The stitched gold "patch" that marks a signed log.
 struct SignedPatch: View {
     let signer: String
+    /// Confirmed by the organization in the app rather than signed on screen.
+    var confirmed = false
 
     var body: some View {
         HStack(spacing: 6) {
@@ -179,7 +181,7 @@ struct SignedPatch: View {
                 .frame(width: 22, height: 22)
                 .background(Circle().fill(Theme.forest))
                 .overlay(Circle().inset(by: 2.5).strokeBorder(Theme.gold, style: StrokeStyle(lineWidth: 1.5, dash: [2.5, 2])))
-            Text("Signed by \(signer)").font(.fig(13, .bold, relativeTo: .footnote)).foregroundStyle(Theme.link)
+            Text("\(confirmed ? "Confirmed" : "Signed") by \(signer)").font(.fig(13, .bold, relativeTo: .footnote)).foregroundStyle(Theme.link)
         }
         .accessibilityElement(children: .combine)
     }

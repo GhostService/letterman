@@ -43,9 +43,9 @@ struct LogDetailView: View {
                             .background(Color.white, in: RoundedRectangle(cornerRadius: 10))
                             .accessibilityLabel("Signature by \(log.signerName)")
                     }
-                    SignedPatch(signer: log.signerName)
+                    SignedPatch(signer: log.signerName, confirmed: log.isConfirmed)
                     if let date = log.signedDate {
-                        Text("Signed \(date.formatted(date: .abbreviated, time: .shortened)). This entry is locked.")
+                        Text("\(log.isConfirmed ? "Confirmed in Letterman" : "Signed") \(date.formatted(date: .abbreviated, time: .shortened)). This entry is locked.")
                             .font(.fig(13)).foregroundStyle(Theme.mute)
                     }
                 }

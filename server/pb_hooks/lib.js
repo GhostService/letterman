@@ -58,6 +58,8 @@ function signupCount(app, opportunityId) {
 
 // Server-side rules for the supervisor signature on an hour log.
 function stampSignature(record) {
+  // Confirmed by an organization (set only by confirmAttendance): its stamp stands without a drawn signature.
+  if (record.getString("confirmed_by") !== "") return
   // Already signed before this save: keep the original stamp (clients can't edit signed logs anyway).
   if (record.original().getString("signature") !== "") return
 
@@ -115,4 +117,33 @@ function notifyAttendees(app, emails, subject, text) {
   }
 }
 
-module.exports = { key, encryptRecord, decryptRecord, signupCount, stampSignature, isUpcoming, attendeeEmails, notifyAttendees }
+// The organization confirmed this volunteer came: their hours for the shift count as signed.
+// Signs the student's own unsigned log for the shift (corrected to the listing's time and length),
+// creates one if they didn't log it, and leaves an already signed log alone.
+function confirmAttendance(app, opportunity, volunteerId, operatorId) {
+  const operator = app.findRecordById("users", operatorId)
+  decryptRecord(operator) // in memory only, for the name; never saved
+  const signer = [operator.getString("name"), opportunity.getString("org_name")].filter((s) => s !== "").join(", ")
+
+  const existing = app.findRecordsByFilter("hour_logs", "owner = {:owner} && opportunity = {:opportunity}", "-created", 1, 0,
+    { owner: volunteerId, opportunity: opportunity.id })
+  let log = existing.length > 0 ? existing[0] : null
+  if (log && (log.getString("signature") !== "" || log.getString("confirmed_by") !== "")) return
+
+  if (!log) {
+    log = new Record(app.findCollectionByNameOrId("hour_logs"))
+    log.set("owner", volunteerId)
+    log.set("opportunity", opportunity.id)
+    log.set("place_name", opportunity.getString("org_name"))
+    log.set("address", opportunity.getString("address"))
+    log.set("comments", opportunity.getString("title"))
+  }
+  log.set("started_at", opportunity.getDateTime("starts_at"))
+  log.set("hours", opportunity.getFloat("duration_hours"))
+  log.set("confirmed_by", operatorId)
+  log.set("signer_name", signer)
+  log.set("signed_at", new DateTime())
+  app.save(log)
+}
+
+module.exports = { key, encryptRecord, decryptRecord, signupCount, stampSignature, isUpcoming, attendeeEmails, notifyAttendees, confirmAttendance }

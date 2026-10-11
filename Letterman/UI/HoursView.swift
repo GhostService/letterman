@@ -142,7 +142,7 @@ struct LogRow: View {
                 Text(log.placeName).font(.fig(16, .bold)).foregroundStyle(Theme.ink)
                 Text(log.startedAt.dayAndTime).font(.fig(13)).foregroundStyle(Theme.mute)
                 Group {
-                    if log.isSigned { SignedPatch(signer: log.signerName) } else { NeedsSignatureBadge() }
+                    if log.isSigned { SignedPatch(signer: log.signerName, confirmed: log.isConfirmed) } else { NeedsSignatureBadge() }
                 }
                 .padding(.top, 4)
             }

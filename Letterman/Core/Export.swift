@@ -35,7 +35,7 @@ enum Export {
         func draw(_ text: String, in rect: CGRect, _ font: UIFont, _ color: UIColor = .black, _ align: NSTextAlignment = .left) {
             let style = NSMutableParagraphStyle()
             style.alignment = align
-            style.lineBreakMode = .byTruncatingTail
+            style.lineBreakMode = .byWordWrapping // wraps when the box has room for more lines, else "…" on the last one
             (text as NSString).draw(with: rect, options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine],
                                     attributes: [.font: font, .foregroundColor: color, .paragraphStyle: style], context: nil)
         }
@@ -88,12 +88,15 @@ enum Export {
                 draw(log.address, in: CGRect(x: margin + 108, y: y + 14, width: 220, height: 13), font(9, .regular), gray)
                 draw(log.comments, in: CGRect(x: margin + 108, y: y + 27, width: 220, height: 24), font(9, .regular), gray)
                 let signedOn = log.signedDate.map { " on \($0.formatted(date: .abbreviated, time: .omitted))" } ?? ""
-                draw("Signed by \(log.signerName)\(signedOn)", in: CGRect(x: margin + 108, y: y + 53, width: 220, height: 13), font(9, .medium), forest)
+                draw("\(log.isConfirmed ? "Confirmed" : "Signed") by \(log.signerName)\(signedOn)", in: CGRect(x: margin + 108, y: y + 53, width: 220, height: 24), font(9, .medium), forest)
                 draw(log.hours.hoursText, in: CGRect(x: margin + 330, y: y, width: 44, height: 18), font(13, .bold), .black, .right)
                 if let image = log.signatureImage {
                     let box = CGRect(x: margin + 386, y: y, width: width - 386, height: 60)
                     let scale = min(box.width / image.size.width, box.height / image.size.height, 1)
                     image.draw(in: CGRect(x: box.minX, y: box.minY, width: image.size.width * scale, height: image.size.height * scale))
+                } else if log.isConfirmed {
+                    draw("Attendance confirmed by the organization in Letterman", in: CGRect(x: margin + 386, y: y + 2, width: width - 386, height: 40),
+                         font(9, .medium), forest)
                 }
                 y += rowHeight - 8
                 line(at: y)
@@ -164,7 +167,7 @@ enum Export {
             worksheet_write_number(sheet, row, 1, log.hours, number)
             worksheet_write_string(sheet, row, 2, log.placeName, top)
             worksheet_write_string(sheet, row, 3, log.address, top)
-            worksheet_write_string(sheet, row, 4, log.isSigned ? "Signed" : "Not signed", top)
+            worksheet_write_string(sheet, row, 4, log.isConfirmed ? "Confirmed" : log.isSigned ? "Signed" : "Not signed", top)
             worksheet_write_string(sheet, row, 5, log.signerName, top)
             if var signed = log.signedDate.map(excelDate) {
                 worksheet_write_datetime(sheet, row, 6, &signed, date)
@@ -185,6 +188,8 @@ enum Export {
                                                       png.count, &imageOptions)
                 }
                 if error != LXW_NO_ERROR { worksheet_write_string(sheet, row, 8, "(signature image missing)", top) }
+            } else if log.isConfirmed {
+                worksheet_write_string(sheet, row, 8, "Attendance confirmed by the organization in Letterman", top)
             }
             row += 1
         }

@@ -61,6 +61,7 @@ struct ListingDetailView: View {
     @Environment(OperatorStore.self) private var store
     let listingID: String
     @State private var editing = false
+    @State private var confirming: [Signup] = []
     @State private var error: String?
 
     var body: some View {
@@ -87,11 +88,22 @@ struct ListingDetailView: View {
             .accessibilityElement(children: .combine)
             Seats(filled: l.spotsFilled, total: l.spotsNeeded)
         } content: {
-            SectionHeader("Who's coming")
+            let started = l.startsAt <= Date()
+            let notMarked = people.filter { $0.attended != true }
+            SectionHeader(title: started ? "Who came" : "Who's coming") {
+                if started && notMarked.count > 1 {
+                    Button("Everyone came") { confirming = notMarked }.font(.fig(15, .bold)).foregroundStyle(Theme.link)
+                }
+            }
             if people.isEmpty {
                 Text("Nobody has signed up yet. Pull down to refresh.").font(.fig(15)).foregroundStyle(Theme.mute).card()
+            } else if started && !notMarked.isEmpty {
+                Text("Mark who came, and Letterman signs their \(l.durationHours.hoursText) \(l.durationHours == 1 ? "hour" : "hours") for them. No signature needed.")
+                    .font(.fig(14)).foregroundStyle(Theme.mute).padding(.horizontal, 4)
             }
-            ForEach(people) { AttendeeRow(signup: $0) }
+            ForEach(people) { person in
+                AttendeeRow(signup: person, onCame: started ? { confirming = [person] } : nil)
+            }
         }
         .refreshable { await loadAttendees(l) }
         .task { await loadAttendees(l) }
@@ -99,7 +111,21 @@ struct ListingDetailView: View {
         .forestNavBar()
         .toolbar { Button("Edit") { editing = true }.foregroundStyle(Theme.gold) }
         .sheet(isPresented: $editing) { ListingFormView(existing: l) }
+        .confirmationDialog(confirming.count == 1 ? "\(confirming[0].name) came?" : "All \(confirming.count) came?",
+                            isPresented: Binding(get: { !confirming.isEmpty }, set: { if !$0 { confirming = [] } }),
+                            titleVisibility: .visible) {
+            Button(confirming.count == 1 ? "Yes, they came" : "Yes, everyone came") {
+                let people = confirming
+                Task { await confirm(people, at: l) }
+            }
+        } message: {
+            Text("This signs \(l.durationHours.hoursText) \(l.durationHours == 1 ? "hour" : "hours") on their Letterman log, like a supervisor signature. It can't be undone.")
+        }
         .errorAlert($error)
+    }
+
+    private func confirm(_ people: [Signup], at listing: Opportunity) async {
+        do { try await store.confirmAttendance(people, at: listing) } catch { self.error = error.localizedDescription }
     }
 
     private func loadAttendees(_ listing: Opportunity) async {
@@ -135,6 +161,8 @@ struct Seats: View {
 
 struct AttendeeRow: View {
     let signup: Signup
+    /// Shown once the shift has started: confirm this person came.
+    var onCame: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 10) {
@@ -144,6 +172,16 @@ struct AttendeeRow: View {
                 if !schoolLine.isEmpty { Text(schoolLine).font(.fig(13)).foregroundStyle(Theme.mute) }
                 Text(signup.email).font(.fig(13)).foregroundStyle(Theme.mute).textSelection(.enabled)
                 if !signup.phone.isEmpty { Text(signup.phone).font(.fig(13)).foregroundStyle(Theme.mute).textSelection(.enabled) }
+                if signup.attended == true {
+                    Label("Came, hours signed", systemImage: "checkmark.seal.fill")
+                        .font(.fig(13, .bold)).foregroundStyle(Theme.link).padding(.top, 4)
+                } else if let onCame {
+                    Button("Mark as came", action: onCame)
+                        .font(.fig(13, .bold)).foregroundStyle(Theme.gold)
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(Capsule().fill(Theme.forest))
+                        .padding(.top, 4)
+                }
             }
             Spacer()
             if let tel = URL(string: "tel:\(signup.phone.filter { $0.isNumber || $0 == "+" })"), !signup.phone.isEmpty {

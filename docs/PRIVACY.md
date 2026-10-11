@@ -31,6 +31,8 @@ These rules are enforced **on the server**, not just in the app. A modified app 
 
 Organization (operator) accounts must be **approved by the admin** before they can post or see any student contact details.
 
+When an organization confirms that you came to its shift, Letterman signs those hours on your log with the organizer's name and organization (for example "Confirmed by Dana Whitfield, Riverside Food Bank"). The organization still can't see your hour logs.
+
 ## How it's protected
 
 - **In transit:** all traffic uses HTTPS. The database server itself isn't reachable from the internet.

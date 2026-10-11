@@ -40,8 +40,11 @@ struct HourLog: Decodable, Identifiable, Equatable {
     var signedAt: String
     /// The listing this was logged from, if the student signed up for it in the app. "" otherwise.
     var opportunity: String?
+    /// Set by the server when the organization confirmed the student came; then there's no drawn signature.
+    var confirmedBy: String?
 
-    var isSigned: Bool { !signature.isEmpty }
+    var isConfirmed: Bool { !(confirmedBy ?? "").isEmpty }
+    var isSigned: Bool { !signature.isEmpty || isConfirmed }
     var signedDate: Date? { PBDate.parse(signedAt) }
     var signatureImage: UIImage? { Data(base64Encoded: signature).flatMap(UIImage.init(data:)) }
 }
@@ -85,6 +88,8 @@ struct Signup: Decodable, Identifiable, Equatable {
     var phone: String
     var school: String
     var grade: String
+    /// The organization confirmed this volunteer came (which signed their hours).
+    var attended: Bool?
     var expand: Expand?
 
     struct Expand: Decodable, Equatable {

@@ -111,3 +111,22 @@ onRecordCreateRequest((e) => {
     e.next()
   })
 }, "signups")
+
+// ---- signups: the organization confirms who came, which signs their hours ----
+// The collection rule already limits this to the listing's operator changing only `attended`.
+onRecordUpdateRequest((e) => {
+  const was = e.record.original().getBool("attended")
+  if (was === e.record.getBool("attended")) return e.next() // e.g. the admin editing something else in the dashboard
+  if (was) throw new BadRequestError("Attendance is confirmed once and can't be undone.")
+  e.app.runInTransaction((txApp) => {
+    const opportunity = txApp.findRecordById("opportunities", e.record.getString("opportunity"))
+    if (opportunity.getDateTime("starts_at").after(new DateTime())) {
+      throw new BadRequestError("You can confirm who came once the shift has started.")
+    }
+    // Credited to the listing's organization, even if the admin ticks it in the dashboard.
+    require(`${__hooks}/lib.js`).confirmAttendance(txApp, opportunity, e.record.getString("volunteer"),
+      opportunity.getString("operator"))
+    e.app = txApp
+    e.next()
+  })
+}, "signups")

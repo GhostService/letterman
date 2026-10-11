@@ -10,6 +10,7 @@ Usage (from the server/ folder, after downloading the pocketbase binary here):
 import json
 import os
 import secrets
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -73,7 +74,8 @@ def main():
     env = dict(os.environ, PB_FIELD_KEY=secrets.token_urlsafe(24)[:32])
     common = ["--dir", data_dir, "--migrationsDir", os.path.join(HERE, "pb_migrations"),
               "--hooksDir", os.path.join(HERE, "pb_hooks"), "--encryptionEnv", "PB_FIELD_KEY"]
-    admin_email, admin_pw = "admin@smoke.test", secrets.token_urlsafe(16)
+    # The prefix keeps a random password from starting with "-", which the CLI would read as a flag.
+    admin_email, admin_pw = "admin@smoke.test", "pw" + secrets.token_urlsafe(16)
     subprocess.run([binary, "superuser", "upsert", admin_email, admin_pw, *common],
                    env=env, check=True, capture_output=True)
     server = subprocess.Popen([binary, "serve", "--http", f"127.0.0.1:{PORT}", *common],
@@ -90,6 +92,7 @@ def main():
     finally:
         server.terminate()
         server.wait()
+        shutil.rmtree(data_dir, ignore_errors=True)
 
     print()
     if failures:
@@ -271,6 +274,46 @@ def run(admin_email, admin_pw, data_dir):
     _, r = call("GET", f"/api/collections/hour_logs/records/{linked}", tv1)
     check("cancelling a listing keeps logs and clears their link", r.get("id") == linked and r.get("opportunity") == "", r)
 
+    # --- organizations confirm who came (confirming signs the student's hours) ---
+    s, r = call("POST", "/api/collections/opportunities/records", to1,
+                {**opp_body, "operator": o1, "title": "Confirm me", "duration_hours": 2.5})
+    shift = r["id"]
+    r3, tr3 = racers[3]
+    _, mine = call("POST", "/api/collections/signups/records", tv1, {"opportunity": shift, "volunteer": v1})
+    _, theirs = call("POST", "/api/collections/signups/records", tr3, {"opportunity": shift, "volunteer": r3})
+    s, _ = call("PATCH", f"/api/collections/signups/records/{mine['id']}", to1, {"attended": True})
+    check("cannot confirm attendance before the shift starts", 400 <= s < 500, s)
+    call("PATCH", f"/api/collections/opportunities/records/{shift}", admin,
+         {"starts_at": iso(datetime.now(timezone.utc) - timedelta(hours=3))})
+    s, r = call("POST", "/api/collections/hour_logs/records", tv1, {**log, "opportunity": shift, "hours": 9})
+    own_log = r["id"]
+    s, _ = call("POST", "/api/collections/hour_logs/records", tv1, {**log, "confirmed_by": o1})
+    check("student cannot mark their own log as confirmed", 400 <= s < 500, s)
+    s, _ = call("PATCH", f"/api/collections/signups/records/{mine['id']}", tv1, {"attended": True})
+    check("student cannot confirm their own attendance", 400 <= s < 500, s)
+    s, _ = call("PATCH", f"/api/collections/signups/records/{mine['id']}", to2, {"attended": True})
+    check("another operator cannot confirm attendance", 400 <= s < 500, s)
+    s, _ = call("PATCH", f"/api/collections/signups/records/{mine['id']}", to1, {"attended": True, "phone": "555-0000"})
+    check("operator can change only attendance on a sign-up", 400 <= s < 500, s)
+    s, r = call("PATCH", f"/api/collections/signups/records/{mine['id']}", to1, {"attended": True})
+    check("operator confirms attendance once the shift has started", s == 200 and r.get("attended") is True, r)
+    _, r = call("GET", f"/api/collections/hour_logs/records?filter=(opportunity='{shift}')", tv1)
+    items = r.get("items", [])
+    check("confirming signs the student's own log instead of adding one",
+          len(items) == 1 and items[0]["id"] == own_log and items[0]["confirmed_by"] == o1, r)
+    check("confirmed log uses the listing's length and names the organization",
+          bool(items) and items[0]["hours"] == 2.5 and items[0]["signer_name"] == "Op One, Food Bank" and items[0]["signed_at"], r)
+    s, _ = call("PATCH", f"/api/collections/hour_logs/records/{own_log}", tv1, {"hours": 9})
+    check("confirmed log is locked", s == 404, s)
+    s, _ = call("PATCH", f"/api/collections/signups/records/{mine['id']}", to1, {"attended": False})
+    check("attendance cannot be undone", 400 <= s < 500, s)
+    s, _ = call("PATCH", f"/api/collections/signups/records/{theirs['id']}", to1, {"attended": True})
+    _, r = call("GET", f"/api/collections/hour_logs/records?filter=(opportunity='{shift}')", tr3)
+    items = r.get("items", [])
+    check("confirming a student who didn't log creates a signed log for them",
+          s == 200 and len(items) == 1 and items[0]["confirmed_by"] == o1 and items[0]["hours"] == 2.5
+          and items[0]["place_name"] == "Food Bank", r)
+
     s, r = call("PATCH", f"/api/collections/users/records/{v1}", tv1, {"phone": "555-0199", "hours_goal": 40})
     check("profile update reads back decrypted", s == 200 and r.get("phone") == "555-0199" and r.get("name") == "Vol One", r)
 
@@ -289,8 +332,18 @@ def run(admin_email, admin_pw, data_dir):
     check("volunteer can delete their account", s == 204, s)
     _, r = call("GET", f"/api/collections/opportunities/records/{opp}", to1)
     check("deleting account frees the spot", r.get("spots_filled") == 0, r)
-    _, r = call("GET", "/api/collections/hour_logs/records", admin)
+    _, r = call("GET", f"/api/collections/hour_logs/records?filter=(owner='{v1}')", admin)
     check("deleting account removes their logs", r.get("totalItems") == 0, r)
+
+    # An organization leaving must not undo the hours it confirmed.
+    s, _ = call("DELETE", f"/api/collections/users/records/{o1}", to1)
+    check("operator can delete their account", s == 204, s)
+    _, r = call("GET", "/api/collections/hour_logs/records", tr3)
+    items = r.get("items", [])
+    check("confirmed hours stay signed after the organization deletes its account",
+          len(items) == 1 and items[0]["confirmed_by"] == o1 and items[0]["signer_name"] == "Op One, Food Bank", r)
+    s, _ = call("PATCH", f"/api/collections/hour_logs/records/{items[0]['id'] if items else 'x'}", tr3, {"hours": 9})
+    check("...and stay locked", s == 404, s)
 
 
 if __name__ == "__main__":

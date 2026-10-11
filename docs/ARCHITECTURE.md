@@ -26,7 +26,8 @@ All in `server/pb_migrations/1759600000_init.js`. 🔒 = encrypted at rest.
 **users** (PocketBase auth collection): email, password, verified, name🔒, phone🔒, school🔒, grade🔒, role (`operator` or empty), operator_requested, org_name, hours_goal
 - Users can only read and change their own record. They can never set `role` or `verified` themselves; only the admin can.
 
-**hour_logs**: owner, started_at, hours, place_name🔒, address🔒, comments🔒, signature🔒 (base64 PNG), signer_name🔒, signed_at, opportunity
+**hour_logs**: owner, started_at, hours, place_name🔒, address🔒, comments🔒, signature🔒 (base64 PNG), signer_name🔒, signed_at, opportunity, confirmed_by
+- A log counts as signed if it has a drawn signature **or** `confirmed_by` (the id of the organization that confirmed the student came). Only the server sets `confirmed_by`; the create/update rules reject it from clients, and confirmed logs are locked like signed ones. It's plain text, not a relation, so an organization deleting its account doesn't undo hours it confirmed.
 - `opportunity` links a log to the listing it was logged from ("Log your hours" after a signed-up shift). Deleting the listing clears it and keeps the log.
 - Only the owner can see them.
 - **Locked once signed:** the update rule requires `signature = ""`, so a signed log can't be changed by anyone but the admin.
@@ -39,7 +40,8 @@ All in `server/pb_migrations/1759600000_init.js`. 🔒 = encrypted at rest.
 - `spots_needed` can't be lowered below the number already signed up.
 - When an operator changes an upcoming listing's time, length or address, or deletes it, a hook emails everyone signed up (one message, attendees in BCC). The email says to open the app rather than stating the new time, because the server doesn't know each student's time zone. A mail failure is logged and never blocks the operator.
 
-**signups**: opportunity, volunteer, plus a contact snapshot: name🔒, email🔒, phone🔒, school🔒, grade🔒
+**signups**: opportunity, volunteer, attended, plus a contact snapshot: name🔒, email🔒, phone🔒, school🔒, grade🔒
+- **Confirming attendance:** once a listing has started, its operator can set `attended` (and nothing else). A hook then, in one transaction, signs the student's own unsigned log for that shift (corrected to the listing's start and length), or creates a confirmed log if they didn't log it; an already signed log is left alone. It can't be undone.
 - Visible to that volunteer and to the operator who owns the listing. Nobody else.
 - The snapshot is copied from the volunteer's profile by a hook. That's how operators get contact info without ever being allowed to read the `users` collection.
 - **No overbooking:** the hook counts sign-ups and inserts inside one database transaction. The smoke test fires 8 simultaneous sign-ups at 3 spots and checks exactly 3 succeed.
