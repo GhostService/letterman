@@ -243,7 +243,8 @@ struct DarkField: View {
         .background(Theme.forest2, in: RoundedRectangle(cornerRadius: 12))
         // Tapping anywhere in the box, including the label, starts typing.
         .contentShape(RoundedRectangle(cornerRadius: 12))
-        .onTapGesture { focused = true }
+        // Async so it runs after the app-wide tap-to-dismiss (LettermanApp.swift) instead of being undone by it.
+        .onTapGesture { DispatchQueue.main.async { focused = true } }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(label)
     }
