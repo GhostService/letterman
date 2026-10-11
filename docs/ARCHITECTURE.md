@@ -74,7 +74,7 @@ Letterman/
     CalendarSync.swift    "Volunteering" calendar in the iPhone Calendar app
     Reminders.swift       local notifications before shifts and a "log your hours" nudge after
     Geo.swift             Apple Maps address suggestions and lookups, one-off GPS reading, distances
-    Export.swift          .xlsx export with embedded signature images
+    Export.swift          PDF report of signed hours, and .xlsx export of every log, both with signature images
     Keychain.swift
   PrivacyInfo.xcprivacy   Apple privacy manifest (required for TestFlight / App Store uploads)
   UI/                     one file per screen group; Theme.swift has colors, fonts and shared pieces
@@ -104,4 +104,3 @@ Letterman/
 | Android / web app | iPhone only for now. |
 | Browsing listings offline | Only hour logging needs to work without signal. |
 | Teams of operators per organization | Each operator account manages its own listings. |
-| PDF hour reports for schools | The Excel export covers it. A PDF would be a good next feature. |

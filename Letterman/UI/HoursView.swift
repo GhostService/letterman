@@ -6,6 +6,7 @@ struct HoursView: View {
     @State private var showingNewLog = false
     @State private var shiftToLog: Opportunity?
     @State private var exportURL: URL?
+    @State private var choosingExport = false
     @State private var error: String?
 
     var body: some View {
@@ -18,7 +19,7 @@ struct HoursView: View {
                 }
                 SectionHeader(title: "Your logs") {
                     if !store.logs.isEmpty {
-                        Button("Export") { export() }.font(.fig(15, .bold)).foregroundStyle(Theme.link)
+                        Button("Export") { choosingExport = true }.font(.fig(15, .bold)).foregroundStyle(Theme.link)
                     }
                 }
                 ForEach(store.pending) { item in
@@ -50,6 +51,12 @@ struct HoursView: View {
             .sheet(isPresented: $showingNewLog) { LogFormView(existing: nil) }
             .sheet(item: $shiftToLog) { LogFormView(existing: nil, draft: LogDraft($0)) }
             .sheet(item: $exportURL) { ShareSheet(url: $0) }
+            .confirmationDialog("Export your hours", isPresented: $choosingExport, titleVisibility: .visible) {
+                Button("PDF report (signed hours)") { export(Export.pdf) }
+                Button("Excel spreadsheet (every log)") { export(Export.spreadsheet) }
+            } message: {
+                Text("The PDF is the one to hand to your school.")
+            }
             .errorAlert($error)
         }
     }
@@ -81,10 +88,10 @@ struct HoursView: View {
         do { try await store.loadAll() } catch { self.error = error.localizedDescription }
     }
 
-    private func export() {
+    private func export(_ make: ([HourLog], User) throws -> URL) {
         guard let user = session.user else { return }
         do {
-            exportURL = try Export.spreadsheet(logs: store.logs, user: user)
+            exportURL = try make(store.logs, user)
         } catch {
             self.error = error.localizedDescription
         }

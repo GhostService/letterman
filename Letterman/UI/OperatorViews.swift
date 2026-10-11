@@ -182,6 +182,8 @@ struct ListingFormView: View {
     @State private var lng: Double?
     @State private var pickedAddress: String?
     @State private var completer = AddressCompleter()
+    @State private var repeats = false
+    @State private var repeatUntil = Date()
     @State private var busy = false
     @State private var confirmingDelete = false
     @State private var error: String?
@@ -217,6 +219,18 @@ struct ListingFormView: View {
                         Text("Pick an address from the suggestions so students nearby can find this.")
                     }
                 }
+                if existing == nil {
+                    Section {
+                        Toggle("Repeats every week", isOn: $repeats).tint(Theme.forest)
+                        if repeats {
+                            DatePicker("Until", selection: $repeatUntil, in: startsAt...lastRepeatDay, displayedComponents: .date)
+                        }
+                    } footer: {
+                        if repeats {
+                            Text("Posts \(starts.count) separate listings, one a week. You can edit or delete each one on its own.")
+                        }
+                    }
+                }
                 Section {
                     Stepper(value: $spots, in: max(existing?.spotsFilled ?? 1, 1)...1000) {
                         HStack { Text("Volunteers needed"); Spacer(); Text("\(spots)").foregroundStyle(Theme.ink) }
@@ -241,7 +255,8 @@ struct ListingFormView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.tint(Theme.link) }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(existing == nil ? "Post" : "Save") { Task { await save() } }.bold().tint(Theme.link).disabled(!canSave)
+                    Button(existing != nil ? "Save" : starts.count > 1 ? "Post \(starts.count)" : "Post") { Task { await save() } }
+                        .bold().tint(Theme.link).disabled(!canSave)
                 }
             }
             .confirmationDialog("Delete this listing?", isPresented: $confirmingDelete, titleVisibility: .visible) {
@@ -250,8 +265,25 @@ struct ListingFormView: View {
                 Text("Everyone who signed up will lose their spot.")
             }
             .onAppear(perform: fill)
+            .onChange(of: repeats) { _, on in
+                if on { repeatUntil = Calendar.current.date(byAdding: .weekOfYear, value: 4, to: startsAt) ?? startsAt }
+            }
             .errorAlert($error)
         }
+    }
+
+    /// Weekly repeats go up to 26 weeks (about 6 months) ahead.
+    private var lastRepeatDay: Date {
+        Calendar.current.date(byAdding: .weekOfYear, value: 25, to: startsAt) ?? startsAt
+    }
+
+    /// Start time of each listing to post: just this one, or one a week through the "until" day.
+    /// Adding calendar weeks keeps the same local time across daylight-saving changes.
+    private var starts: [Date] {
+        guard existing == nil, repeats else { return [startsAt] }
+        let endOfLastDay = Calendar.current.startOfDay(for: repeatUntil).addingTimeInterval(86400)
+        return (0..<26).compactMap { Calendar.current.date(byAdding: .weekOfYear, value: $0, to: startsAt) }
+            .filter { $0 < endOfLastDay }
     }
 
     private var canSave: Bool {
@@ -305,15 +337,22 @@ struct ListingFormView: View {
     private func save() async {
         busy = true
         defer { busy = false }
+        let starts = starts
+        var posted = 0
         do {
-            try await store.save([
-                "title": title.trimmed, "org_name": orgName.trimmed, "description": details.trimmed,
-                "address": address.trimmed, "starts_at": PBDate.string(startsAt),
-                "duration_hours": hours, "spots_needed": spots, "lat": lat ?? 0, "lng": lng ?? 0,
-            ], existingID: existing?.id)
+            for start in starts {
+                try await store.save([
+                    "title": title.trimmed, "org_name": orgName.trimmed, "description": details.trimmed,
+                    "address": address.trimmed, "starts_at": PBDate.string(start),
+                    "duration_hours": hours, "spots_needed": spots, "lat": lat ?? 0, "lng": lng ?? 0,
+                ], existingID: existing?.id)
+                posted += 1
+            }
             dismiss()
         } catch {
-            self.error = error.localizedDescription
+            // Don't retry the whole series: the ones already posted would be duplicated.
+            self.error = posted == 0 ? error.localizedDescription
+                : "Posted \(posted) of \(starts.count). The rest didn't go through: \(error.localizedDescription)"
         }
     }
 

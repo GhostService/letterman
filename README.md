@@ -17,12 +17,12 @@ An iPhone app for high-school students to log volunteer hours, get each entry si
 - **Supervisor signature:** a full-screen sign-off where the person in charge types their name and signs with a finger. Signed entries are locked so they stay trustworthy.
 - Works with no signal: entries (including signatures) are saved on the phone and upload by themselves later.
 - Track progress toward an hours goal (e.g. a 40-hour graduation requirement).
-- **Export** every log to an Excel spreadsheet with the signature images embedded, to send to a school.
+- **Export** a PDF report of signed hours with each supervisor's signature, to hand to a school, or every log to an Excel spreadsheet.
 - Browse opportunities, see how many spots are left, sign up or cancel.
 - Calendar of sign-ups plus your own entries, synced to a "Volunteering" calendar in the iPhone Calendar app.
 
 **Organizations (operators)**, after the admin approves them
-- Post opportunities with address, time, length and how many people are needed.
+- Post opportunities with address, time, length and how many people are needed, once or repeating weekly.
 - See who's coming with their contact details, and how many more people are needed.
 
 **Privacy:** students' personal details and signatures are encrypted in the database, and organizations only see contact details of students who signed up for their own listings. See [docs/PRIVACY.md](docs/PRIVACY.md).
