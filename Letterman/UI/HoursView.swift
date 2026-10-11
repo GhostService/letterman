@@ -4,6 +4,7 @@ struct HoursView: View {
     @Environment(Session.self) private var session
     @Environment(VolunteerStore.self) private var store
     @State private var showingNewLog = false
+    @State private var shiftToLog: Opportunity?
     @State private var exportURL: URL?
     @State private var error: String?
 
@@ -12,6 +13,9 @@ struct HoursView: View {
             HeroScreen {
                 hero
             } content: {
+                ForEach(store.unloggedShifts) { shift in
+                    ShiftToLogCard(shift: shift, log: { shiftToLog = shift }, notNow: { store.dismissShift(shift) })
+                }
                 SectionHeader(title: "Your logs") {
                     if !store.logs.isEmpty {
                         Button("Export") { export() }.font(.fig(15, .bold)).foregroundStyle(Theme.link)
@@ -44,6 +48,7 @@ struct HoursView: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: HourLog.self) { LogDetailView(logID: $0.id) }
             .sheet(isPresented: $showingNewLog) { LogFormView(existing: nil) }
+            .sheet(item: $shiftToLog) { LogFormView(existing: nil, draft: LogDraft($0)) }
             .sheet(item: $exportURL) { ShareSheet(url: $0) }
             .errorAlert($error)
         }
@@ -83,6 +88,26 @@ struct HoursView: View {
         } catch {
             self.error = error.localizedDescription
         }
+    }
+}
+
+/// A shift the student signed up for has ended: offer a ready-made log for the supervisor to sign.
+struct ShiftToLogCard: View {
+    let shift: Opportunity
+    let log: () -> Void
+    let notNow: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Log your hours from \(shift.title)?").font(.fig(17, .bold)).foregroundStyle(Theme.ink)
+            Text("\(shift.orgName), \(shift.startsAt.dayAndTime), \(shift.durationHours.hoursText) \(shift.durationHours == 1 ? "hour" : "hours")")
+                .font(.fig(13)).foregroundStyle(Theme.mute)
+            HStack(spacing: 12) {
+                Button("Log hours", action: log).buttonStyle(ForestButtonStyle())
+                Button("Not now", action: notNow).font(.fig(16, .semibold)).foregroundStyle(Theme.mute)
+            }
+        }
+        .card()
     }
 }
 

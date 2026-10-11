@@ -43,7 +43,7 @@ final class VolunteerStore {
         async let signups: [Signup] = pb.list("signups", filter: "volunteer = '\(userID)'", expand: "opportunity")
         async let events: [CalendarEvent] = pb.list("calendar_events", sort: "starts_at")
         (self.logs, self.opportunities, self.signups, self.events) = try await (logs, opportunities, signups, events)
-        CalendarSync.sync(agenda)
+        agendaChanged()
     }
 
     // MARK: Hour logs
@@ -135,10 +135,36 @@ final class VolunteerStore {
         let fresh: Opportunity = try await pb.send("GET", "/api/collections/opportunities/records/\(id)")
         if let i = opportunities.firstIndex(where: { $0.id == id }) { opportunities[i] = fresh }
         if let i = signups.firstIndex(where: { $0.opportunity == id }) { signups[i].expand = .init(opportunity: fresh) }
-        CalendarSync.sync(agenda)
+        agendaChanged()
+    }
+
+    // MARK: Shifts to log
+
+    static let dismissedShiftsKey = "dismissedShiftLogs"
+    private(set) var dismissedShifts = UserDefaults.standard.stringArray(forKey: dismissedShiftsKey) ?? []
+
+    /// Signed-up shifts that ended in the last 60 days and haven't been logged (or waved off) yet.
+    var unloggedShifts: [Opportunity] {
+        let now = Date()
+        let logged = Set(logs.compactMap(\.opportunity) + pending.compactMap(\.draft.opportunity))
+        return signups.compactMap(\.expand?.opportunity)
+            .filter { $0.endsAt < now && $0.endsAt > now.addingTimeInterval(-60 * 86400) }
+            .filter { !logged.contains($0.id) && !dismissedShifts.contains($0.id) }
+            .sorted { $0.startsAt > $1.startsAt }
+    }
+
+    func dismissShift(_ shift: Opportunity) {
+        dismissedShifts.append(shift.id)
+        UserDefaults.standard.set(dismissedShifts, forKey: Self.dismissedShiftsKey)
     }
 
     // MARK: Calendar
+
+    /// Keeps the iPhone Calendar copy and the reminders in step with the agenda.
+    private func agendaChanged() {
+        CalendarSync.sync(agenda)
+        Reminders.sync(agenda)
+    }
 
     func saveEvent(_ body: [String: Any], existingID: String?) async throws {
         var body = body
@@ -149,13 +175,13 @@ final class VolunteerStore {
         events.removeAll { $0.id == saved.id }
         events.append(saved)
         events.sort { $0.startsAt < $1.startsAt }
-        CalendarSync.sync(agenda)
+        agendaChanged()
     }
 
     func deleteEvent(_ event: CalendarEvent) async throws {
         try await pb.delete("calendar_events", id: event.id)
         events.removeAll { $0.id == event.id }
-        CalendarSync.sync(agenda)
+        agendaChanged()
     }
 
     /// Custom entries plus every opportunity the volunteer signed up for, oldest first.

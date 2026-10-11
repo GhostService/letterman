@@ -6,6 +6,7 @@ struct AgendaView: View {
     @State private var selectedDay = Calendar.current.startOfDay(for: Date())
     @State private var editing: EventEditor?
     @State private var syncOn = CalendarSync.isEnabled
+    @State private var remindOn = Reminders.isEnabled
     @State private var error: String?
 
     var body: some View {
@@ -45,6 +46,16 @@ struct AgendaView: View {
                 .tint(Theme.forest)
                 .card()
                 .padding(.top, 8)
+
+                Toggle(isOn: $remindOn) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Remind me before shifts").font(.fig(16, .semibold)).foregroundStyle(Theme.ink)
+                        Text("The evening before and an hour before, plus a nudge to log your hours afterwards.")
+                            .font(.fig(13)).foregroundStyle(Theme.mute)
+                    }
+                }
+                .tint(Theme.forest)
+                .card()
             }
             .refreshable {
                 do { try await store.loadAll() } catch { self.error = error.localizedDescription }
@@ -52,6 +63,7 @@ struct AgendaView: View {
             .toolbar(.hidden, for: .navigationBar)
             .sheet(item: $editing) { EventFormView(editor: $0) }
             .onChange(of: syncOn) { _, on in Task { await setSync(on) } }
+            .onChange(of: remindOn) { _, on in Task { await setReminders(on) } }
             .errorAlert($error)
         }
     }
@@ -109,6 +121,19 @@ struct AgendaView: View {
             }
         } else if CalendarSync.isEnabled {
             CalendarSync.disable()
+        }
+    }
+
+    private func setReminders(_ on: Bool) async {
+        if on {
+            if await Reminders.enable() {
+                Reminders.sync(store.agenda)
+            } else {
+                remindOn = false
+                error = "Notifications are off for Letterman. Turn them on in Settings > Notifications > Letterman."
+            }
+        } else if Reminders.isEnabled {
+            Reminders.disable()
         }
     }
 }

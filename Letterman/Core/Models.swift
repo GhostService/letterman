@@ -38,6 +38,8 @@ struct HourLog: Decodable, Identifiable, Equatable {
     var signerName: String
     /// Set by the server when signed. Kept as text because it's "" while unsigned.
     var signedAt: String
+    /// The listing this was logged from, if the student signed up for it in the app. "" otherwise.
+    var opportunity: String?
 
     var isSigned: Bool { !signature.isEmpty }
     var signedDate: Date? { PBDate.parse(signedAt) }
@@ -108,8 +110,20 @@ struct LogDraft: Codable, Equatable {
     var comments = ""
     var signaturePNG: Data?
     var signerName = ""
+    /// The listing this log is for, when logged from a shift the student signed up for.
+    var opportunity: String?
 
     init() {}
+
+    /// Prefilled from a shift the student signed up for in the app.
+    init(_ shift: Opportunity) {
+        placeName = shift.orgName
+        address = shift.address
+        startedAt = shift.startsAt
+        hours = shift.durationHours
+        comments = shift.title
+        opportunity = shift.id
+    }
 
     init(_ log: HourLog) {
         placeName = log.placeName
@@ -128,6 +142,7 @@ struct LogDraft: Codable, Equatable {
             "hours": hours,
             "comments": comments.trimmed,
         ]
+        if let opportunity { body["opportunity"] = opportunity }
         if let signaturePNG {
             body["signature"] = signaturePNG.base64EncodedString()
             body["signer_name"] = signerName.trimmed

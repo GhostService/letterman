@@ -256,6 +256,21 @@ def run(admin_email, admin_pw, data_dir):
     s, _ = call("GET", f"/api/collections/hour_logs/records/{signed_log}", to1)
     check("operators cannot read volunteer logs", s == 404, s)
 
+    # --- changes and cancellations (attendees are emailed; a mail problem must never block the operator) ---
+    s, r = call("POST", "/api/collections/opportunities/records", to1, {**opp_body, "operator": o1, "title": "Will cancel"})
+    cancel = r["id"]
+    call("POST", "/api/collections/signups/records", tv1, {"opportunity": cancel, "volunteer": v1})
+    s, r = call("POST", "/api/collections/hour_logs/records", tv1, {**log, "opportunity": cancel})
+    check("log can point at the listing it came from", s == 200 and r.get("opportunity") == cancel, r)
+    linked = r["id"]
+    s, r = call("PATCH", f"/api/collections/opportunities/records/{cancel}", to1,
+                {"starts_at": iso(datetime.now(timezone.utc) + timedelta(days=2))})
+    check("moving a listing with attendees still saves", s == 200, r)
+    s, _ = call("DELETE", f"/api/collections/opportunities/records/{cancel}", to1)
+    check("cancelling a listing with attendees still works", s == 204, s)
+    _, r = call("GET", f"/api/collections/hour_logs/records/{linked}", tv1)
+    check("cancelling a listing keeps logs and clears their link", r.get("id") == linked and r.get("opportunity") == "", r)
+
     s, r = call("PATCH", f"/api/collections/users/records/{v1}", tv1, {"phone": "555-0199", "hours_goal": 40})
     check("profile update reads back decrypted", s == 200 and r.get("phone") == "555-0199" and r.get("name") == "Vol One", r)
 

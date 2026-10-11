@@ -31,6 +31,7 @@
 		9B67E28B71E8F012B89E622F /* Figtree-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80E104ACF97C460F7ED4B65C /* Figtree-Bold.ttf */; };
 		9FBB5FDF1423C743D0A4E515 /* OFL-BigShouldersDisplay.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6F190474C05C38C04B92F556 /* OFL-BigShouldersDisplay.txt */; };
 		A41E177601489A5036E4F19C /* SignatureSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49ABFCB6C225DD8F297A4BAB /* SignatureSheet.swift */; };
+		B4553516726E14C1D139C7A1 /* Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CA1F020601790ADFD4908E /* Reminders.swift */; };
 		B67AC0A5D5CE130AC0F29CA1 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A61A48239507BAD8B9448FB /* Keychain.swift */; };
 		C01BEC09F3AD83E2C54BD450 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA68E4BA7BD59C5693CA8EA8 /* Theme.swift */; };
 		C9461332DEE2D0486285F32E /* OFL-Figtree.txt in Resources */ = {isa = PBXBuildFile; fileRef = 91016FE5BEF38B75F36CF538 /* OFL-Figtree.txt */; };
@@ -53,6 +54,7 @@
 		49A18746A8807ACB50823DCA /* Letterman.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Letterman.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49ABFCB6C225DD8F297A4BAB /* SignatureSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureSheet.swift; sourceTree = "<group>"; };
 		4A88DAEBF310919E0AD7588B /* Export.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Export.swift; sourceTree = "<group>"; };
+		62CA1F020601790ADFD4908E /* Reminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminders.swift; sourceTree = "<group>"; };
 		6529831A3D140BCF1BC16354 /* VolunteerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolunteerStore.swift; sourceTree = "<group>"; };
 		66826053C96CE6E620EFC68F /* HoursView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoursView.swift; sourceTree = "<group>"; };
 		6A61A48239507BAD8B9448FB /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				7414F848FD90CEF1B298F7DD /* OperatorStore.swift */,
 				79B547D9C72399AAE448FF9B /* Outbox.swift */,
 				EB1C3DA83D6A92E666BA6CCC /* PocketBase.swift */,
+				62CA1F020601790ADFD4908E /* Reminders.swift */,
 				EA35B0601DB009871A1A6E16 /* Session.swift */,
 				6529831A3D140BCF1BC16354 /* VolunteerStore.swift */,
 			);
@@ -272,6 +275,7 @@
 				769C1B29BE40F85A6136F595 /* Outbox.swift in Sources */,
 				705B862A011A91BBCFB855E3 /* PocketBase.swift in Sources */,
 				8427C9AE362E8AFC89CB2E42 /* ProfileView.swift in Sources */,
+				B4553516726E14C1D139C7A1 /* Reminders.swift in Sources */,
 				8337F73D1E37656DB6E52A9E /* Session.swift in Sources */,
 				A41E177601489A5036E4F19C /* SignatureSheet.swift in Sources */,
 				C01BEC09F3AD83E2C54BD450 /* Theme.swift in Sources */,

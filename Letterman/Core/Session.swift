@@ -86,7 +86,9 @@ final class Session {
         Keychain.delete(Self.userKey)
         Outbox.clear()
         CalendarSync.disable()
+        Reminders.disable()
         AreaKey.all.forEach(UserDefaults.standard.removeObject(forKey:))
+        UserDefaults.standard.removeObject(forKey: VolunteerStore.dismissedShiftsKey)
     }
 
     private func store(_ auth: AuthResponse) {

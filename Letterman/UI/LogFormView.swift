@@ -11,9 +11,10 @@ struct LogFormView: View {
     @State private var error: String?
     @State private var savedOffline = false
 
-    init(existing: HourLog?) {
+    /// `draft` prefills a new log, e.g. from a shift the student signed up for.
+    init(existing: HourLog?, draft: LogDraft? = nil) {
         self.existing = existing
-        _draft = State(initialValue: existing.map(LogDraft.init) ?? LogDraft())
+        _draft = State(initialValue: draft ?? existing.map(LogDraft.init) ?? LogDraft())
     }
 
     var body: some View {

@@ -78,4 +78,41 @@ function stampSignature(record) {
   record.set("signed_at", new DateTime())
 }
 
-module.exports = { key, encryptRecord, decryptRecord, signupCount, stampSignature }
+// The listing hasn't finished yet, so its attendees still care about changes.
+function isUpcoming(opportunity) {
+  const ends = opportunity.getDateTime("starts_at").unix() + opportunity.getFloat("duration_hours") * 3600
+  return ends > new DateTime().unix()
+}
+
+// Account emails of everyone signed up (the account email isn't one of the encrypted fields).
+function attendeeEmails(app, opportunityId) {
+  return app.findRecordsByFilter("signups", "opportunity = {:id}", "", 0, 0, { id: opportunityId })
+    .map((s) => {
+      try {
+        return app.findRecordById("users", s.getString("volunteer")).email()
+      } catch (_) {
+        return ""
+      }
+    })
+    .filter((email) => email !== "")
+}
+
+// One email with every attendee in BCC, so they can't see each other's addresses.
+// Best effort: a mail problem is logged but never fails the organization's save or delete.
+function notifyAttendees(app, emails, subject, text) {
+  if (emails.length === 0) return
+  const meta = app.settings().meta
+  try {
+    app.newMailClient().send(new MailerMessage({
+      from: { address: meta.senderAddress, name: meta.senderName },
+      to: [{ address: meta.senderAddress, name: meta.senderName }],
+      bcc: emails.map((address) => ({ address })),
+      subject,
+      text,
+    }))
+  } catch (err) {
+    app.logger().warn("Couldn't email attendees", "subject", subject, "count", emails.length, "error", String(err))
+  }
+}
+
+module.exports = { key, encryptRecord, decryptRecord, signupCount, stampSignature, isUpcoming, attendeeEmails, notifyAttendees }

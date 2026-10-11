@@ -52,6 +52,33 @@ onRecordUpdateRequest((e) => {
   e.next()
 }, "opportunities")
 
+// ---- opportunities: tell attendees about changes and cancellations ----
+// The emails don't include the new time: the server doesn't know each student's time zone, the app does.
+onRecordUpdateRequest((e) => {
+  const lib = require(`${__hooks}/lib.js`)
+  const before = e.record.original()
+  const moved = e.record.getString("starts_at") !== before.getString("starts_at") ||
+    e.record.getFloat("duration_hours") !== before.getFloat("duration_hours") ||
+    e.record.getString("address") !== before.getString("address")
+  e.next()
+  if (!moved || !lib.isUpcoming(before)) return
+  lib.notifyAttendees(e.app, lib.attendeeEmails(e.app, e.record.id),
+    `Change to ${e.record.getString("title")}`,
+    `${e.record.getString("org_name")} changed the time or place of "${e.record.getString("title")}", which you signed up for.\n\n` +
+    `Open Letterman to see the new details. You're still signed up. If you can't make it anymore, cancel your spot in the app so someone else can take it.`)
+}, "opportunities")
+
+onRecordDeleteRequest((e) => {
+  const lib = require(`${__hooks}/lib.js`)
+  // Read the attendees first: deleting the listing also deletes their sign-ups.
+  const emails = lib.isUpcoming(e.record) ? lib.attendeeEmails(e.app, e.record.id) : []
+  e.next()
+  lib.notifyAttendees(e.app, emails,
+    `Cancelled: ${e.record.getString("title")}`,
+    `${e.record.getString("org_name")} cancelled "${e.record.getString("title")}", which you signed up for, so you no longer have a spot.\n\n` +
+    `Open Letterman to find another opportunity.`)
+}, "opportunities")
+
 // ---- signups: no overbooking + contact snapshot ----
 onRecordCreateRequest((e) => {
   // Not a signed-in volunteer: let the collection's create rule reject it.
