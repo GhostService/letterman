@@ -1,0 +1,12 @@
+Copyright (c) 2026 GhostService. All rights reserved.
+
+This source code is published so it can be read and reviewed. No license is
+granted to copy, modify, distribute, sublicense, sell, or use this code, or
+any part of it, in any other app, service, or product without prior written
+permission from the copyright holder.
+
+Third-party components keep their own licenses:
+- Big Shoulders Display and Figtree fonts: SIL Open Font License 1.1
+  (see Letterman/Fonts/OFL-*.txt)
+- libxlsxwriter: BSD 2-Clause license, fetched as a Swift package
+- PocketBase (downloaded separately, not part of this repository): MIT license

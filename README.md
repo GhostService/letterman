@@ -75,3 +75,7 @@ The name shown on the home screen is `CFBundleDisplayName` in `project.yml` (run
 Three directions were prototyped (`docs/designs/`). **B · Letterman** was chosen: forest green and varsity gold, with big condensed numbers and a stitched "patch" for signed hours.
 
 Fonts: [Big Shoulders Display](https://fonts.google.com/specimen/Big+Shoulders+Display) and [Figtree](https://fonts.google.com/specimen/Figtree), both under the SIL Open Font License (license files in `Letterman/Fonts/`).
+
+## License
+
+Copyright © 2026 GhostService. All rights reserved. The code is public to read, but not licensed for reuse; see [LICENSE](LICENSE).
