@@ -39,6 +39,39 @@ struct RootView: View {
             // Picks up email verification and operator approval when coming back to the app.
             if phase == .active, !session.isRestoring { Task { await session.refresh() } }
         }
+        .background(KeyboardDismisser())
+    }
+}
+
+/// Tapping anywhere outside a text field closes the keyboard, on every screen and sheet.
+/// One tap recognizer on the app's window instead of a tap handler on each screen.
+private struct KeyboardDismisser: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView { Hook() }
+    func updateUIView(_ uiView: UIView, context: Context) {}
+
+    private final class Hook: UIView, UIGestureRecognizerDelegate {
+        override func didMoveToWindow() {
+            guard let window, !(window.gestureRecognizers ?? []).contains(where: { $0.delegate === self }) else { return }
+            let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
+            tap.cancelsTouchesInView = false // the tap still reaches buttons, steppers and pickers
+            tap.delegate = self
+            window.addGestureRecognizer(tap)
+        }
+
+        @objc private func tapped(_ tap: UITapGestureRecognizer) { tap.view?.endEditing(true) }
+
+        // Tapping another text field moves the cursor there instead of closing the keyboard.
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            var view = touch.view
+            while let v = view {
+                if v is UITextField || v is UITextView { return false }
+                view = v.superview
+            }
+            return true
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool { true }
     }
 }
 
