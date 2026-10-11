@@ -55,19 +55,21 @@ enum CalendarSync {
     }
 
     private static func makeCalendar() -> EKCalendar? {
-        let calendar = EKCalendar(for: .event, eventStore: store)
-        calendar.title = "Volunteering"
-        calendar.cgColor = CGColor(red: 0x12 / 255, green: 0x3B / 255, blue: 0x2A / 255, alpha: 1)
-        // Use the same account (iCloud or On My iPhone) as the user's default calendar.
-        guard let source = store.defaultCalendarForNewEvents?.source ?? store.sources.first(where: { $0.sourceType == .local })
-        else { return nil }
-        calendar.source = source
-        do {
-            try store.saveCalendar(calendar, commit: true)
-        } catch {
-            return nil
+        // Prefer the account of the user's default calendar. Some accounts (Google, many Exchange servers)
+        // don't let apps add calendars, so fall back to iCloud, then On My iPhone, then anything else.
+        let preferred = store.defaultCalendarForNewEvents?.source
+        let others = [EKSourceType.calDAV, .local, .exchange].flatMap { type in
+            store.sources.filter { $0.sourceType == type && $0 !== preferred }
         }
-        UserDefaults.standard.set(calendar.calendarIdentifier, forKey: calendarIDKey)
-        return calendar
+        for source in [preferred].compactMap({ $0 }) + others {
+            let calendar = EKCalendar(for: .event, eventStore: store)
+            calendar.title = "Volunteering"
+            calendar.cgColor = CGColor(red: 0x12 / 255, green: 0x3B / 255, blue: 0x2A / 255, alpha: 1)
+            calendar.source = source
+            guard (try? store.saveCalendar(calendar, commit: true)) != nil else { continue }
+            UserDefaults.standard.set(calendar.calendarIdentifier, forKey: calendarIDKey)
+            return calendar
+        }
+        return nil
     }
 }
