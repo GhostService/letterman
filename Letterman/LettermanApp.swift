@@ -28,6 +28,8 @@ struct RootView: View {
                     VerifyEmailView(email: user.email)
                 } else if user.isOperator {
                     OperatorTabs(userID: user.id)
+                } else if user.awaitingOperatorApproval {
+                    AwaitingApprovalView(user: user)
                 } else {
                     VolunteerTabs(userID: user.id)
                 }

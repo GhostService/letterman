@@ -4,13 +4,13 @@ Day-to-day tasks once everything from [FIRST_SETUP.md](../FIRST_SETUP.md) is don
 
 ## Approving organization (operator) accounts
 
-People who sign up with "I'm signing up for an organization" stay volunteers until you approve them.
+People who sign up with "I'm signing up for an organization" see a **Waiting for approval** screen until you approve them. It has a button that emails lettermansupport@tiredghost.com with their organization name and account email.
 
 1. Open **https://hours.tiredghost.com/_/** → **Collections → users**.
 2. In the search box, filter: `operator_requested = true && role != "operator"`
 3. Open the person. Check the **org_name** and email look real (an organization email or website helps), set **role** to `operator`, and **Save**.
 
-Their app switches to the organization view the next time they open it. To take access away, clear **role** (or set it to `volunteer`) and save.
+Their app switches to the organization view the next time they open it. To take access away, clear **role** and save; they go back to the waiting screen. To turn someone down, or to make them a regular volunteer instead, also untick **operator_requested** (or delete the account).
 
 Only approve people you trust: operators see the contact details of students who sign up for their listings.
 

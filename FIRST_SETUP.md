@@ -332,8 +332,8 @@ To make your Team stick if you ever regenerate the project, see [docs/MAINTENANC
 Use two different email addresses you can check (a Gmail `+` address works: `you+org@gmail.com` delivers to `you@gmail.com`).
 
 1. **Student account:** in the app, **Create account** with your name and first email. Open the verification email on any device, tap **Verify**, then in the app tap **I've verified my email**.
-2. **Organization account:** sign out. Create a second account with the other email, turn on **I'm signing up for an organization**, and add an org name. Verify that email too. The Profile tab says it's waiting for approval.
-3. **Approve it:** in the dashboard (**https://hours.tiredghost.com/_/**) → **Collections → users** → open that account → set **role** to `operator` → **Save**. Close and reopen the app; it switches to **My listings**.
+2. **Organization account:** sign out. Create a second account with the other email, turn on **I'm signing up for an organization**, and add an org name. Verify that email too. The app shows **Waiting for approval**, with a button to email lettermansupport@tiredghost.com.
+3. **Approve it:** in the dashboard (**https://hours.tiredghost.com/_/**) → **Collections → users** → open that account → set **role** to `operator` → **Save**. In the app tap **I've been approved**; it switches to **My listings**.
 4. **Post a listing:** tap **New**, fill it in, tap **Post**.
 5. **Sign up:** sign out, sign in as the student, go to **Opportunities**, and sign up. It appears on the **Calendar** tab.
 6. **See who's coming:** sign in as the organization and open the listing. You're on the list, with contact details.

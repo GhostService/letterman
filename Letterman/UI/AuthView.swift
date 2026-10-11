@@ -54,7 +54,7 @@ struct AuthView: View {
                     .padding(.vertical, 4)
                     if isOrganization {
                         DarkField(label: "Organization name", text: $orgName)
-                        Text("An admin reviews organization accounts before they can post. Until then you can use the app as a volunteer.")
+                        Text("Organization accounts are approved by hand. After you verify your email, the app shows how to ask for approval.")
                             .font(.fig(13)).foregroundStyle(Theme.heroMuted)
                     }
                 }
@@ -161,5 +161,46 @@ struct VerifyEmailView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Theme.forest.ignoresSafeArea())
         .errorAlert($error)
+    }
+}
+
+/// Shown to an organization account until the admin sets its role to operator in the dashboard.
+struct AwaitingApprovalView: View {
+    @Environment(Session.self) private var session
+    let user: User
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Waiting for approval").font(.display(52)).foregroundStyle(Theme.gold)
+            Text("Organization accounts are approved by hand. Email \(Config.supportEmail) to ask for \(user.orgName) to be approved, then come back here.")
+                .font(.fig(17)).foregroundStyle(Theme.heroText)
+                .textSelection(.enabled)
+            Stripe().padding(.vertical, 8)
+            Link("Email us to get approved", destination: mailURL)
+                .buttonStyle(GoldButtonStyle())
+            Button("I've been approved") { Task { await session.refresh() } }
+                .font(.fig(16, .semibold)).foregroundStyle(Theme.gold).frame(maxWidth: .infinity)
+            Spacer()
+            Button("Sign out") { session.signOut() }
+                .font(.fig(16, .semibold)).foregroundStyle(Theme.heroMuted).frame(maxWidth: .infinity)
+        }
+        .padding(22)
+        .padding(.top, 40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Theme.forest.ignoresSafeArea())
+    }
+
+    /// Opens a pre-filled email so the admin can find the account in the dashboard.
+    private var mailURL: URL {
+        var mail = URLComponents()
+        mail.scheme = "mailto"
+        mail.path = Config.supportEmail
+        mail.queryItems = [
+            URLQueryItem(name: "subject", value: "Approve my organization: \(user.orgName)"),
+            URLQueryItem(name: "body", value: "Please approve my organization account.\n\nOrganization: \(user.orgName)\nAccount email: \(user.email)\n"),
+        ]
+        // Some mail apps turn a "+" (as in name+org@gmail.com) into a space.
+        mail.percentEncodedQuery = mail.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        return mail.url!
     }
 }

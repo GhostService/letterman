@@ -4,6 +4,9 @@ enum Config {
     /// Your PocketBase server. Change this if you move to a different domain.
     static let productionURL = URL(string: "https://hours.tiredghost.com")!
 
+    /// Where organizations email to ask for their account to be approved.
+    static let supportEmail = "lettermansupport@tiredghost.com"
+
     /// Debug builds in the Simulator talk to PocketBase running on this Mac (see FIRST_SETUP.md, Part A).
     /// Everything else, including the app on your iPhone, uses the real server.
     static var baseURL: URL {

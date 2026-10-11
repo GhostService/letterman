@@ -24,12 +24,6 @@ struct ProfileView: View {
                     Text("Organization account").font(.fig(13, .bold)).foregroundStyle(Theme.gold)
                 }
             } content: {
-                if user?.awaitingOperatorApproval == true {
-                    Label("Your organization account is waiting for approval. Until then you can use the app as a volunteer.",
-                          systemImage: "hourglass")
-                        .font(.fig(14, .semibold)).foregroundStyle(Theme.ink).card()
-                }
-
                 VStack(alignment: .leading, spacing: 12) {
                     field("Full name", $name)
                     field("Phone (optional)", $phone).keyboardType(.phonePad)
